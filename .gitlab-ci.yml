@@ -1,0 +1,7 @@
+include:
+  - project: templates/gitlab-ci
+    ref: "master"
+    file: java-build-publish.yaml
+
+variables:
+  ENABLE_CHECK: "false"
