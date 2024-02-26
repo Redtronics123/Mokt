@@ -4,4 +4,4 @@ plugins {
 
 rootProject.name = extra["projectName"] as String
 
-include("example", "lib")
+include(/* ...projectPaths = */ ":example", ":lib")
