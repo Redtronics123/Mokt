@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.serialization.json)
 }
 
 group = "dev.redtronics"
@@ -10,5 +11,9 @@ repositories {
 }
 
 dependencies {
+    // Mokt
     implementation(project(":lib"))
+
+    // logging
+    implementation(libs.logback)
 }
