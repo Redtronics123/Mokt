@@ -15,6 +15,7 @@
 
 package dev.redtronics.mokt
 
+import dev.redtronics.mokt.entity.BlockedServer
 import dev.redtronics.mokt.entity.PlayerName
 import dev.redtronics.mokt.entity.PlayerUUID
 import dev.redtronics.mokt.entity.PlayerUUIDPayload
@@ -72,6 +73,24 @@ class Mokt(
 
             ResponseHandler.validate(response)
             return response.body<PlayerName>()
+        }
+
+        suspend fun getBlockedServer(limit: Int = 20, fromFirst: Boolean = false, fromLast: Boolean = false): BlockedServer {
+            require(value = limit >= 0) { "The limit cant low than 0" }
+
+            val response = Http.client.get {
+                url(urlString = "${BuildConstants.MINECRAFT_SESSION_URL}/blockedservers")
+            }
+
+            ResponseHandler.validate(response)
+
+            if (limit == 0) {
+                return response.body<BlockedServer>()
+            }
+
+            return BlockedServer(
+                response.body<BlockedServer>().hashedAddresses.take(limit)
+            )
         }
     }
 }
