@@ -13,8 +13,9 @@
  * copies or substantial portions of the Software.
  */
 
-package dev.redtronics.mokt.build
+package dev.redtronics.mokt
 
 object BuildConstants {
-    const val minecraftApiUrl = "${minecraftApiUrl}"
+    const val MINECRAFT_API_URL = "${minecraftApiUrl}"
+    const val MINECRAFT_SERVICE_URL = "${minecraftServiceUrl}"
 }
