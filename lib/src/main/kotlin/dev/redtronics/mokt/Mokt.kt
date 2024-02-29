@@ -15,15 +15,14 @@
 
 package dev.redtronics.mokt
 
-import dev.redtronics.mokt.entity.BlockedServer
-import dev.redtronics.mokt.entity.PlayerName
-import dev.redtronics.mokt.entity.PlayerUUID
-import dev.redtronics.mokt.entity.PlayerUUIDPayload
+import dev.redtronics.mokt.entity.*
 import dev.redtronics.mokt.http.Http
 import dev.redtronics.mokt.http.ResponseHandler
+import dev.redtronics.mokt.types.UUID
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import java.util.*
 import kotlin.text.toCharArray
 
 class Mokt(
@@ -63,11 +62,9 @@ class Mokt(
         return response.body<MutableList<PlayerUUID>>()
     }
 
-    suspend fun getPlayerName(uuid: String): PlayerName {
-        require(uuid.isNotBlank() && uuid.toCharArray().size == 32) { "UUID cannot be blank" }
-
+    suspend fun getPlayerName(uuid: UUID): PlayerName {
         val response = Http.client.get {
-            url(urlString = "${BuildConstants.MINECRAFT_API_URL}/user/profile/${uuid}")
+            url(urlString = "${BuildConstants.MINECRAFT_API_URL}/user/profile/${uuid.value}")
         }
 
         ResponseHandler.validate(response)
@@ -90,5 +87,14 @@ class Mokt(
         return BlockedServer(
             response.body<BlockedServer>().hashedAddresses.take(limit)
         )
+    }
+
+    suspend fun getPlayerProfile(uuid: UUID, unsigned: Boolean = true): PlayerProfile {
+        val response = Http.client.get {
+            url(urlString = "${BuildConstants.MINECRAFT_SESSION_URL}/session/minecraft/profile/${uuid.value}?unsigned=$unsigned")
+        }
+
+        ResponseHandler.validate(response)
+        return response.body<PlayerProfile>()
     }
 }
