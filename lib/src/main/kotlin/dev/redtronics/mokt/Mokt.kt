@@ -15,6 +15,50 @@
 
 package dev.redtronics.mokt
 
-class Mokt {
+import dev.redtronics.mokt.entity.PlayerUUID
+import dev.redtronics.mokt.entity.PlayerUUIDPayload
+import dev.redtronics.mokt.http.Http
+import dev.redtronics.mokt.http.ResponseHandler
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 
+class Mokt(
+    private val minecraftAuthToken: String? = null,
+) {
+    suspend fun getPlayerUUID(username: String): PlayerUUID {
+        require(username.isNotBlank()) { "Username cannot be blank" }
+
+        val response = Http.client.get {
+            url(urlString = "${BuildConstants.MINECRAFT_API_URL}/users/profiles/minecraft/${username.lowercase()}")
+        }
+
+        ResponseHandler.validate(response)
+        return response.body<PlayerUUID>()
+    }
+
+    companion object {
+        suspend fun getPlayerUUIDs(vararg usernames: String): MutableList<PlayerUUID> {
+            require(usernames.isNotEmpty() && usernames.size <= 10) { "Usernames must be between 1 and 10" }
+            return getPlayerUUIDs(usernames.toMutableList())
+        }
+
+        suspend fun getPlayerUUIDs(usernames: MutableList<String>): MutableList<PlayerUUID> {
+            require(value = usernames.isNotEmpty() && usernames.size <= 10) { "Usernames must be between 1 and 10" }
+
+            usernames.forEach { username ->
+                username.lowercase()
+            }
+
+            val payload = PlayerUUIDPayload(usernames = usernames)
+            val response = Http.client.post {
+                contentType(ContentType.Application.Json)
+                url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/minecraft/profile/lookup/bulk/byname")
+                setBody(payload)
+            }
+
+            ResponseHandler.validate(response)
+            return response.body<MutableList<PlayerUUID>>()
+        }
+    }
 }
