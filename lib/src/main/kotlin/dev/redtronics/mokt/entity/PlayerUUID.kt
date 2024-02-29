@@ -15,61 +15,61 @@
 
 package dev.redtronics.mokt.entity
 
-import dev.redtronics.mokt.build.BuildConstants
-import dev.redtronics.mokt.http.Http
-import dev.redtronics.mokt.http.StatusCode
+import dev.redtronics.mokt.BuildConstants
+import dev.redtronics.mokt.http.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.serialization.Serializable
 
-class PlayerUUID(
-    private val username: String
+internal class PlayerUUID(
+    private val username: String,
 ) {
+    suspend fun getPlayerUUID(): PlayerUUIDData {
+        require(username.isNotBlank()) { "Username cannot be blank" }
+
+        val response = Http.client.get {
+            url(urlString = "${BuildConstants.MINECRAFT_API_URL}/users/profiles/minecraft/${username.lowercase()}")
+        }
+
+        ResponseHandler.validate(response)
+        return response.body<PlayerUUIDData>()
+    }
+
     companion object {
-        suspend fun getUserUUID(username: String): UserUUIDData {
-            require(username.isNotBlank()) { "Username cannot be blank" }
+        suspend fun getPlayerUUIDs(vararg usernames: String): MutableList<PlayerUUIDData> {
+            require(usernames.isNotEmpty() && usernames.size <= 10) { "Usernames must be between 1 and 10"}
+            return getPlayerUUIDs(usernames.toMutableList())
+        }
 
-            val response = Http.client.get {
-                url(urlString = "${BuildConstants.minecraftApiUrl}/users/profiles/minecraft/${username.lowercase()}")
+        suspend fun getPlayerUUIDs(usernames: MutableList<String>): MutableList<PlayerUUIDData> {
+            require(usernames.isNotEmpty() && usernames.size <= 10) { "Usernames must be between 1 and 10"}
+
+            usernames.forEach { username ->
+                username.lowercase()
             }
 
-            if (response.status.value == StatusCode.NOT_FOUND.code) {
-                val errorResponse = response.body<UserUUIDNoContent>()
-                throw IllegalArgumentException(
-                    "User with username $username does not exist. Error: ${errorResponse.errorMessage} Path: ${errorResponse.path}"
-                )
+            val payload = PlayerUUIDPayload(usernames = usernames)
+            val response = Http.client.post {
+                contentType(ContentType.Application.Json)
+                url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/minecraft/profile/lookup/bulk/byname")
+                setBody(payload)
             }
 
-            if (response.status.value == 404) {
-                val errorResponse = response.body<UserUUIDNotFound>()
-                throw IllegalArgumentException(
-                    "User with username $username does not exist. Error: ${errorResponse.error} Message: ${errorResponse.errorMessage}"
-                )
-            }
-            return response.body<UserUUIDData>()
+            ResponseHandler.validate(response)
+            return response.body<MutableList<PlayerUUIDData>>()
         }
     }
 }
 
+
+@Serializable
+data class PlayerUUIDData(
+    val name: String,
+    val id: String,
+)
+
 @Serializable
 data class PlayerUUIDPayload(
-    val usernames: List<String>
-)
-
-@Serializable
-data class UserUUIDData(
-    val name: String,
-    val id: String
-)
-
-@Serializable
-data class UserUUIDNoContent(
-    val path: String,
-    val errorMessage: String
-)
-
-@Serializable
-data class UserUUIDNotFound(
-    val error: String,
-    val errorMessage: String
+    val usernames: List<String>,
 )
