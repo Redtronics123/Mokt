@@ -46,6 +46,9 @@ dependencies {
 
     // Common
     api(libs.ktor.seralization.json)
+
+    // Test
+    testImplementation(kotlin("test"))
 }
 
 val targetJavaVersion = 21
@@ -100,6 +103,10 @@ tasks {
 
     withType<Jar> {
         dependsOn("generateTemplates")
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }
 
