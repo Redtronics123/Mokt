@@ -28,6 +28,11 @@ import kotlinx.serialization.encoding.Encoder
  * */
 @Serializable(with = StatusCode.StatusCodeSerializer::class)
 enum class StatusCode(val code: Int) {
+    OK(200),
+    NO_CONTENT(204),
+    BAD_REQUEST(400),
+    METHOD_NOT_ALLOWED(405),
+    TOO_MANY_REQUESTS(429),
     NOT_FOUND(404);
 
     internal object StatusCodeSerializer : KSerializer<StatusCode> {
