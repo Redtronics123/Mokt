@@ -23,6 +23,9 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
+/**
+ * This enum represents the status codes that can be returned by the server.
+ * */
 @Serializable(with = StatusCode.StatusCodeSerializer::class)
 enum class StatusCode(val code: Int) {
     NOT_FOUND(404);

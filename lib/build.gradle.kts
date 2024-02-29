@@ -56,15 +56,34 @@ java {
     withSourcesJar()
 }
 
+val minecraftApiUrl: String by project
+
+val templateSrc = "src/main/templates"
+val templateDest: File = project.layout.buildDirectory.file("generated/templates").get().asFile
+val templateProps: Map<String, Any> = mapOf(
+    "minecraftApiUrl" to minecraftApiUrl
+)
+
 tasks {
+    create<Copy>(name = "generateTemplates") {
+        filteringCharset = "UTF-8"
+        inputs.properties(templateProps)
+
+        from(templateSrc)
+        expand(templateProps)
+        into(templateDest)
+    }
+
     withType<JavaCompile> {
         options.encoding = "UTF-8"
+        dependsOn("generateTemplates")
     }
 
     withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = targetJavaVersion.toString()
         }
+        dependsOn("generateTemplates")
     }
 }
 

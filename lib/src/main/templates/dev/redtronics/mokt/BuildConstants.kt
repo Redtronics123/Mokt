@@ -13,8 +13,8 @@
  * copies or substantial portions of the Software.
  */
 
-package dev.redtronics.mokt.payloads
+package dev.redtronics.mokt
 
-data class UserUUIDsPayload(
-    val usernames: List<String>
-)
+object BuildConstants {
+    const val minecraftApiUrl = "${minecraftApiUrl}"
+}

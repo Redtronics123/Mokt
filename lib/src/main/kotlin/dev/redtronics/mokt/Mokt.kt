@@ -13,24 +13,8 @@
  * copies or substantial portions of the Software.
  */
 
-package dev.redtronics.mokt.response
+package dev.redtronics.mokt
 
-import kotlinx.serialization.Serializable
+class Mokt {
 
-@Serializable
-data class UserUUID(
-    val name: String,
-    val id: String
-)
-
-@Serializable
-data class UserUUIDNoContent(
-    val path: String,
-    val errorMessage: String
-)
-
-@Serializable
-data class UserUUIDNotFound(
-    val error: String,
-    val errorMessage: String
-)
+}
