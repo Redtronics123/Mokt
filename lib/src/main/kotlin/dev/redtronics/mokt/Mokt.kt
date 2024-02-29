@@ -22,8 +22,6 @@ import dev.redtronics.mokt.types.UUID
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import java.util.*
-import kotlin.text.toCharArray
 
 class Mokt(
     private val minecraftAuthToken: String? = null,
