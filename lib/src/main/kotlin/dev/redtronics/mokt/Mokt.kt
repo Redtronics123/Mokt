@@ -54,7 +54,7 @@ class Mokt(
         val response = Http.client.post {
             contentType(ContentType.Application.Json)
             url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/minecraft/profile/lookup/bulk/byname")
-            setBody(payload)
+            setBody(payload.usernames)
         }
 
         ResponseHandler.validate(response)
