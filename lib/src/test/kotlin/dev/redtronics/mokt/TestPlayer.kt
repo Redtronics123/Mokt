@@ -63,4 +63,10 @@ class TestPlayer {
             else -> throw Exception("Player UUIDs are not correct")
         }
     }
+
+    @Test
+    fun `test to get player profile without unsigned`() = runBlocking {
+        val playerProfileData = mokt.getPlayerProfile(UUID(value = "430d7fb21add41b5b9217995f8cac3e7"), false)
+        println(playerProfileData)
+    }
 }
