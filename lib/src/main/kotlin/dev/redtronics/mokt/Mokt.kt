@@ -15,6 +15,7 @@
 
 package dev.redtronics.mokt
 
+import dev.redtronics.mokt.entity.PlayerName
 import dev.redtronics.mokt.entity.PlayerUUID
 import dev.redtronics.mokt.entity.PlayerUUIDPayload
 import dev.redtronics.mokt.http.Http
@@ -22,22 +23,23 @@ import dev.redtronics.mokt.http.ResponseHandler
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import kotlin.text.toCharArray
 
 class Mokt(
     private val minecraftAuthToken: String? = null,
 ) {
-    suspend fun getPlayerUUID(username: String): PlayerUUID {
-        require(username.isNotBlank()) { "Username cannot be blank" }
+    companion object {
+        suspend fun getPlayerUUID(username: String): PlayerUUID {
+            require(username.isNotBlank()) { "Username cannot be blank" }
 
-        val response = Http.client.get {
-            url(urlString = "${BuildConstants.MINECRAFT_API_URL}/users/profiles/minecraft/${username.lowercase()}")
+            val response = Http.client.get {
+                url(urlString = "${BuildConstants.MINECRAFT_API_URL}/users/profiles/minecraft/${username.lowercase()}")
+            }
+
+            ResponseHandler.validate(response)
+            return response.body<PlayerUUID>()
         }
 
-        ResponseHandler.validate(response)
-        return response.body<PlayerUUID>()
-    }
-
-    companion object {
         suspend fun getPlayerUUIDs(vararg usernames: String): MutableList<PlayerUUID> {
             require(usernames.isNotEmpty() && usernames.size <= 10) { "Usernames must be between 1 and 10" }
             return getPlayerUUIDs(usernames.toMutableList())
@@ -59,6 +61,17 @@ class Mokt(
 
             ResponseHandler.validate(response)
             return response.body<MutableList<PlayerUUID>>()
+        }
+
+        suspend fun getPlayerName(uuid: String): PlayerName {
+            require(uuid.isNotBlank() && uuid.toCharArray().size == 32) { "UUID cannot be blank" }
+
+            val response = Http.client.get {
+                url(urlString = "${BuildConstants.MINECRAFT_API_URL}/user/profile/${uuid}")
+            }
+
+            ResponseHandler.validate(response)
+            return response.body<PlayerName>()
         }
     }
 }
