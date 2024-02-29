@@ -15,17 +15,18 @@
 
 package dev.redtronics.mokt.entity
 
+import dev.redtronics.mokt.types.UUID
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class PlayerUUID(
-    val name: String,
     @SerialName("id")
-    val uuid: String,
+    val uuid: UUID,
+    val name: String
 )
 
 @Serializable
 data class PlayerUUIDPayload(
-    val usernames: List<String>,
+    val usernames: MutableList<String>
 )
