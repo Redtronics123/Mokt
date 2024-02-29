@@ -20,7 +20,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PlayerUUID(
     val name: String,
-    val id: String,
+    val uuid: String,
 )
 
 @Serializable
