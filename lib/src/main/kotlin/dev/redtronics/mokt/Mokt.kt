@@ -29,68 +29,66 @@ import kotlin.text.toCharArray
 class Mokt(
     private val minecraftAuthToken: String? = null,
 ) {
-    companion object {
-        suspend fun getPlayerUUID(username: String): PlayerUUID {
-            require(username.isNotBlank()) { "Username cannot be blank" }
+    suspend fun getPlayerUUID(username: String): PlayerUUID {
+        require(username.isNotBlank()) { "Username cannot be blank" }
 
-            val response = Http.client.get {
-                url(urlString = "${BuildConstants.MINECRAFT_API_URL}/users/profiles/minecraft/${username.lowercase()}")
-            }
-
-            ResponseHandler.validate(response)
-            return response.body<PlayerUUID>()
+        val response = Http.client.get {
+            url(urlString = "${BuildConstants.MINECRAFT_API_URL}/users/profiles/minecraft/${username.lowercase()}")
         }
 
-        suspend fun getPlayerUUIDs(vararg usernames: String): MutableList<PlayerUUID> {
-            require(usernames.isNotEmpty() && usernames.size <= 10) { "Usernames must be between 1 and 10" }
-            return getPlayerUUIDs(usernames.toMutableList())
+        ResponseHandler.validate(response)
+        return response.body<PlayerUUID>()
+    }
+
+    suspend fun getPlayerUUIDs(vararg usernames: String): MutableList<PlayerUUID> {
+        require(usernames.isNotEmpty() && usernames.size <= 10) { "Usernames must be between 1 and 10" }
+        return getPlayerUUIDs(usernames.toMutableList())
+    }
+
+    suspend fun getPlayerUUIDs(usernames: MutableList<String>): MutableList<PlayerUUID> {
+        require(value = usernames.isNotEmpty() && usernames.size <= 10) { "Usernames must be between 1 and 10" }
+
+        usernames.forEach { username ->
+            username.lowercase()
         }
 
-        suspend fun getPlayerUUIDs(usernames: MutableList<String>): MutableList<PlayerUUID> {
-            require(value = usernames.isNotEmpty() && usernames.size <= 10) { "Usernames must be between 1 and 10" }
-
-            usernames.forEach { username ->
-                username.lowercase()
-            }
-
-            val payload = PlayerUUIDPayload(usernames = usernames)
-            val response = Http.client.post {
-                contentType(ContentType.Application.Json)
-                url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/minecraft/profile/lookup/bulk/byname")
-                setBody(payload)
-            }
-
-            ResponseHandler.validate(response)
-            return response.body<MutableList<PlayerUUID>>()
+        val payload = PlayerUUIDPayload(usernames = usernames)
+        val response = Http.client.post {
+            contentType(ContentType.Application.Json)
+            url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/minecraft/profile/lookup/bulk/byname")
+            setBody(payload)
         }
 
-        suspend fun getPlayerName(uuid: String): PlayerName {
-            require(uuid.isNotBlank() && uuid.toCharArray().size == 32) { "UUID cannot be blank" }
+        ResponseHandler.validate(response)
+        return response.body<MutableList<PlayerUUID>>()
+    }
 
-            val response = Http.client.get {
-                url(urlString = "${BuildConstants.MINECRAFT_API_URL}/user/profile/${uuid}")
-            }
+    suspend fun getPlayerName(uuid: String): PlayerName {
+        require(uuid.isNotBlank() && uuid.toCharArray().size == 32) { "UUID cannot be blank" }
 
-            ResponseHandler.validate(response)
-            return response.body<PlayerName>()
+        val response = Http.client.get {
+            url(urlString = "${BuildConstants.MINECRAFT_API_URL}/user/profile/${uuid}")
         }
 
-        suspend fun getBlockedServer(limit: Int = 20, fromFirst: Boolean = false, fromLast: Boolean = false): BlockedServer {
-            require(value = limit >= 0) { "The limit cant low than 0" }
+        ResponseHandler.validate(response)
+        return response.body<PlayerName>()
+    }
 
-            val response = Http.client.get {
-                url(urlString = "${BuildConstants.MINECRAFT_SESSION_URL}/blockedservers")
-            }
+    suspend fun getBlockedServer(limit: Int = 20): BlockedServer {
+        require(value = limit >= 0) { "The limit cant low than 0" }
 
-            ResponseHandler.validate(response)
-
-            if (limit == 0) {
-                return response.body<BlockedServer>()
-            }
-
-            return BlockedServer(
-                response.body<BlockedServer>().hashedAddresses.take(limit)
-            )
+        val response = Http.client.get {
+            url(urlString = "${BuildConstants.MINECRAFT_SESSION_URL}/blockedservers")
         }
+
+        ResponseHandler.validate(response)
+
+        if (limit == 0) {
+            return response.body<BlockedServer>()
+        }
+
+        return BlockedServer(
+            response.body<BlockedServer>().hashedAddresses.take(limit)
+        )
     }
 }
