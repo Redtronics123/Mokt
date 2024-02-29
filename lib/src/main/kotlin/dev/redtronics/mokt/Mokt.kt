@@ -21,6 +21,7 @@ import dev.redtronics.mokt.http.ResponseHandler
 import dev.redtronics.mokt.types.UUID
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 
 class Mokt(
@@ -77,13 +78,14 @@ class Mokt(
         }
 
         ResponseHandler.validate(response)
+        val responseList = response.bodyAsText().trim().split("\n").toMutableList()
 
         if (limit == 0) {
-            return response.body<BlockedServer>()
+            return BlockedServer(responseList)
         }
 
         return BlockedServer(
-            response.body<BlockedServer>().hashedAddresses.take(limit)
+            responseList.take(limit).toMutableList()
         )
     }
 

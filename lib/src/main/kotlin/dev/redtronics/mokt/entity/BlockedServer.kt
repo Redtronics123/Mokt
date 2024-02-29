@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BlockedServer(
-    val hashedAddresses: List<String>
+    val hashedAddresses: MutableList<String>
 )
