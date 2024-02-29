@@ -15,6 +15,7 @@
 
 package dev.redtronics.mokt.entity
 
+import dev.redtronics.mokt.build.BuildConstants
 import dev.redtronics.mokt.http.Http
 import dev.redtronics.mokt.http.StatusCode
 import io.ktor.client.call.*
@@ -29,7 +30,7 @@ class PlayerUUID(
             require(username.isNotBlank()) { "Username cannot be blank" }
 
             val response = Http.client.get {
-                url(urlString = "https://api.mojang.com/users/profiles/minecraft/${username.lowercase()}")
+                url(urlString = "${BuildConstants.minecraftApiUrl}/users/profiles/minecraft/${username.lowercase()}")
             }
 
             if (response.status.value == StatusCode.NOT_FOUND.code) {
