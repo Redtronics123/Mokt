@@ -87,6 +87,14 @@ tasks {
     }
 }
 
+kotlin {
+    sourceSets {
+        main {
+            kotlin.srcDir(templateDest)
+        }
+    }
+}
+
 publishing {
     publications {
         create<MavenPublication>(name = "mokt") {
