@@ -58,12 +58,14 @@ java {
 
 val minecraftApiUrl: String by project
 val minecraftServiceUrl: String by project
+val minecraftSessionUrl: String by project
 
 val templateSrc = "src/main/templates"
 val templateDest: File = project.layout.buildDirectory.file("generated/templates").get().asFile
 val templateProps: Map<String, Any> = mapOf(
     "minecraftApiUrl" to minecraftApiUrl,
-    "minecraftServiceUrl" to minecraftServiceUrl
+    "minecraftServiceUrl" to minecraftServiceUrl,
+    "minecraftSessionUrl" to minecraftSessionUrl
 )
 
 kotlin {

@@ -18,4 +18,5 @@ package dev.redtronics.mokt
 object BuildConstants {
     const val MINECRAFT_API_URL = "${minecraftApiUrl}"
     const val MINECRAFT_SERVICE_URL = "${minecraftServiceUrl}"
+    const val MINECRAFT_SESSION_URL = "${minecraftSessionUrl}"
 }
