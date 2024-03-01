@@ -9,10 +9,10 @@ variables:
 test:
   artifacts:
     paths:
-      - build/kover-reports/result.xml
+      - "**/build/kover-reports/result.xml"
     reports:
       junit:
-        - build/test-results/test/TEST-*.xml
+        - "**/build/test-results/test/TEST-*.xml"
 
 convert-coverage-report:
   # Must be in a stage later than test-jdk11's stage.
