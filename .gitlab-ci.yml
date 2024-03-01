@@ -14,7 +14,7 @@ test:
       junit:
         - "**/build/test-results/test/TEST-*.xml"
 
-convert-coverage-report:
+.convert-coverage-report:
   # Must be in a stage later than test-jdk11's stage.
   # The `visualize` stage does not exist by default.
   # Please define it first, or choose an existing stage like `deploy`.
