@@ -50,6 +50,9 @@ dependencies {
     // Common
     api(libs.ktor.seralization.json)
 
+    // Codec
+    implementation(libs.codec)
+
     // Test
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.assertions.core)
