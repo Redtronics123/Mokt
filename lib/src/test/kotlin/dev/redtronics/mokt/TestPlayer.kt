@@ -21,10 +21,8 @@ import dev.redtronics.mokt.entity.PlayerProfileProperties
 import dev.redtronics.mokt.entity.PlayerUUID
 import dev.redtronics.mokt.types.UUID
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
-import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
