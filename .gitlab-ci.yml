@@ -6,7 +6,7 @@ include:
 variables:
   ENABLE_CHECK: "true"
 
-check:
+test:
   artifacts:
     paths:
       - build/kover-reports/result.xml
@@ -18,7 +18,7 @@ convert-coverage-report:
   # Must be in a stage later than test-jdk11's stage.
   # The `visualize` stage does not exist by default.
   # Please define it first, or choose an existing stage like `deploy`.
-  stage: check
+  stage: test
   image: registry.gitlab.com/haynes/jacoco2cobertura:latest
   rules:
     - if: $ENABLE_CHECK == "true" && $CI_COMMIT_TAG == null
@@ -26,7 +26,7 @@ convert-coverage-report:
     # convert report from jacoco to cobertura, using relative project path
     - python /opt/cover2cover.py build/kover-reports/result.xml $CI_PROJECT_DIR/src/main/kotlin/ > build/kover-reports/cobertura.xml
   needs:
-    - job: check
+    - job: test
       artifacts: true
   artifacts:
     reports:
