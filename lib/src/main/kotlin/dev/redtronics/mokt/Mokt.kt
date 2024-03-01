@@ -16,34 +16,36 @@
 package dev.redtronics.mokt
 
 import dev.redtronics.mokt.entity.*
-import dev.redtronics.mokt.http.Http
-import dev.redtronics.mokt.http.ResponseHandler
+import dev.redtronics.mokt.http.requireSuccessful
 import dev.redtronics.mokt.types.UUID
-import io.ktor.client.call.*
+import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
-class Mokt(
-    private val minecraftAuthToken: String? = null,
+sealed class Mokt(
+    private val httpClient: HttpClient,
+    private val json: Json,
 ) {
     suspend fun getPlayerUUID(username: String): PlayerUUID {
         require(username.isNotBlank()) { "Username cannot be blank" }
 
-        val response = Http.client.get {
+        val response = httpClient.get {
             url(urlString = "${BuildConstants.MINECRAFT_API_URL}/users/profiles/minecraft/${username.lowercase()}")
         }
-
-        ResponseHandler.validate(response)
-        return response.body<PlayerUUID>()
+        
+        response.requireSuccessful()
+        return json.decodeFromString(response.bodyAsText())
     }
 
-    suspend fun getPlayerUUIDs(vararg usernames: String): MutableList<PlayerUUID> {
+    suspend fun getPlayerUUIDs(vararg usernames: String): List<PlayerUUID> {
         require(usernames.isNotEmpty() && usernames.size <= 10) { "Usernames must be between 1 and 10" }
         return getPlayerUUIDs(usernames.toMutableList())
     }
 
-    suspend fun getPlayerUUIDs(usernames: MutableList<String>): MutableList<PlayerUUID> {
+    suspend fun getPlayerUUIDs(usernames: List<String>): List<PlayerUUID> {
         require(value = usernames.isNotEmpty() && usernames.size <= 10) { "Usernames must be between 1 and 10" }
 
         usernames.forEach { username ->
@@ -51,33 +53,33 @@ class Mokt(
         }
 
         val payload = PlayerUUIDPayload(usernames = usernames)
-        val response = Http.client.post {
+        val response = httpClient.post {
             contentType(ContentType.Application.Json)
             url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/minecraft/profile/lookup/bulk/byname")
-            setBody(payload.usernames)
+            setBody(json.encodeToString(payload.usernames))
         }
 
-        ResponseHandler.validate(response)
-        return response.body<MutableList<PlayerUUID>>()
+        response.requireSuccessful()
+        return json.decodeFromString(response.bodyAsText())
     }
 
     suspend fun getPlayerName(uuid: UUID): PlayerName {
-        val response = Http.client.get {
+        val response = httpClient.get {
             url(urlString = "${BuildConstants.MINECRAFT_API_URL}/user/profile/${uuid.value}")
         }
 
-        ResponseHandler.validate(response)
-        return response.body<PlayerName>()
+        response.requireSuccessful()
+        return json.decodeFromString(response.bodyAsText())
     }
 
     suspend fun getBlockedServer(limit: Int = 20): BlockedServer {
         require(value = limit >= 0) { "The limit cant low than 0" }
 
-        val response = Http.client.get {
+        val response = httpClient.get {
             url(urlString = "${BuildConstants.MINECRAFT_SESSION_URL}/blockedservers")
         }
 
-        ResponseHandler.validate(response)
+        response.requireSuccessful()
         val responseList = response.bodyAsText().trim().split("\n").toMutableList()
 
         if (limit == 0) {
@@ -90,11 +92,28 @@ class Mokt(
     }
 
     suspend fun getPlayerProfile(uuid: UUID, unsigned: Boolean = true): PlayerProfile {
-        val response = Http.client.get {
+        val response = httpClient.get {
             url(urlString = "${BuildConstants.MINECRAFT_SESSION_URL}/session/minecraft/profile/${uuid.value}?unsigned=$unsigned")
         }
 
-        ResponseHandler.validate(response)
-        return response.body<PlayerProfile>()
+        response.requireSuccessful()
+        return json.decodeFromString(response.bodyAsText())
+    }
+
+    class Public(
+        httpClient: HttpClient,
+        json: Json = Json {
+            ignoreUnknownKeys = true
+        },
+    ) : Mokt(httpClient, json)
+
+    class Authenticated(
+        private val authToken: String,
+        httpClient: HttpClient,
+        json: Json = Json {
+            ignoreUnknownKeys = true
+        },
+    ) : Mokt(httpClient, json) {
+
     }
 }
