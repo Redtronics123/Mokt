@@ -13,14 +13,16 @@
  * copies or substantial portions of the Software.
  */
 
-import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.serialization.json)
     alias(libs.plugins.dokka)
     alias(libs.plugins.kover)
+    alias(libs.plugins.kotest.multiplatform)
     `maven-publish`
 }
 
@@ -31,49 +33,70 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    // Serialization
-    api(libs.kotlinx.serialization.json)
-
-    /* Ktor */
-    // Client
-    api(libs.ktor.client.core)
-    api(libs.ktor.client.cio)
-    api(libs.ktor.client.content.negotiation)
-    api(libs.ktor.client.logging)
-
-    // Server
-    api(libs.ktor.server.core)
-    api(libs.ktor.server.cio)
-    api(libs.ktor.server.content.negotiation)
-
-    // Common
-    api(libs.ktor.seralization.json)
-
-    // Codec
-    implementation(libs.codec)
-
-    // Test
-    testImplementation(libs.kotest.runner.junit5)
-    testImplementation(libs.kotest.assertions.core)
-    testImplementation(libs.kotest.assertions.ktor)
-    testImplementation(libs.kotest.property)
-    testImplementation(libs.kotest.junitxml)
-    testImplementation(libs.ktor.client.mock)
-    testImplementation(libs.ktor.server.test.host)
-}
-
 val minecraftApiUrl: String by project
 val minecraftServiceUrl: String by project
 val minecraftSessionUrl: String by project
 
-val templateSrc = "src/main/templates"
+val templateSrc = "src/commonMain/templates"
 val templateDest: File = project.layout.buildDirectory.file("generated/templates").get().asFile
 val templateProps: Map<String, Any> = mapOf(
     "minecraftApiUrl" to minecraftApiUrl,
     "minecraftServiceUrl" to minecraftServiceUrl,
     "minecraftSessionUrl" to minecraftSessionUrl
 )
+
+
+kotlin {
+    jvm {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "1.8"
+            }
+        }
+    }
+    linuxArm64()
+    linuxX64()
+
+    sourceSets {
+        commonMain {
+            kotlin.srcDir(templateDest)
+            dependencies {
+                // Serialization
+                api(libs.kotlinx.serialization.json)
+
+                // Ktor Client
+                api(libs.ktor.client.core)
+
+                // Ktor Server
+                api(libs.ktor.server.core)
+                api(libs.ktor.server.cio)
+                api(libs.ktor.server.content.negotiation)
+
+                // Ktor Common
+                api(libs.ktor.seralization.json)
+            }
+        }
+        commonTest {
+            dependencies {
+                // Kotest
+                implementation(libs.kotest.framework.engine)
+                implementation(libs.kotest.assertions.core)
+                implementation(libs.kotest.property)
+
+                // Ktor Mock
+                implementation(libs.ktor.client.mock)
+                implementation(libs.ktor.server.test.host)
+            }
+        }
+
+        jvmTest {
+            dependencies {
+                // Kotest
+                implementation(libs.kotest.runner.junit5)
+            }
+        }
+    }
+}
 
 tasks {
     create<Copy>(name = "generateTemplates") {
@@ -85,83 +108,47 @@ tasks {
         into(templateDest)
     }
 
-    withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
+    withType<KotlinCompile<*>> {
         dependsOn("generateTemplates")
     }
 
-    test {
+    named<Test>("jvmTest") {
         useJUnitPlatform()
-
-        reports {
-            junitXml.required = false
+        reports.junitXml.required = true
+        systemProperty("gradle.build.dir", layout.buildDirectory.get().asFile.absolutePath)
+        filter {
+            isFailOnNoMatchingTests = false
         }
-
-        systemProperty("gradle.build.dir", project.layout.buildDirectory.asFile.get().absolutePath)
-    }
-
-    withType<DokkaTask> {
-        outputDirectory = layout.buildDirectory.dir("dokka")
-    }
-
-    create<Jar>("javadocJar") {
-        group = "build"
-        archiveClassifier.set("javadoc")
-        from(layout.buildDirectory.dir("dokka"))
-        dependsOn("dokkaJavadoc")
-    }
-
-    create<Jar>("sourcesJar") {
-        group = "build"
-        archiveClassifier.set("sources")
-        from(kotlin.sourceSets["main"].kotlin.srcDirs)
-    }
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-
-    withSourcesJar()
-    withJavadocJar()
-}
-
-kotlin {
-    jvmToolchain(8)
-    sourceSets {
-        main {
-            kotlin.srcDir(templateDest)
+        testLogging {
+            showExceptions = true
+            showStandardStreams = true
+            events = setOf(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
+            exceptionFormat = TestExceptionFormat.FULL
         }
     }
 }
 
-koverReport {
-    filters {
-        includes {
-            packages("dev.redtronics.mokt")
-        }
-    }
-    defaults {
-        html {
-            setReportDir(layout.buildDirectory.dir("kover-reports/html-result"))
-            onCheck = true
-        }
-        xml {
-            setReportFile(layout.buildDirectory.file("kover-reports/result.xml"))
-            onCheck = true
-        }
-    }
-}
+//
+//koverReport {
+//    filters {
+//        includes {
+//            packages("dev.redtronics.mokt")
+//        }
+//    }
+//    defaults {
+//        html {
+//            setReportDir(layout.buildDirectory.dir("kover-reports/html-result"))
+//            onCheck = true
+//        }
+//        xml {
+//            setReportFile(layout.buildDirectory.file("kover-reports/result.xml"))
+//            onCheck = true
+//        }
+//    }
+//}
 
 publishing {
     publications {
-        create<MavenPublication>(name = "mokt") {
-            from(components["java"])
-            artifactId = "mokt"
-        }
-
         withType<MavenPublication> {
             pom {
                 name = "Mokt"

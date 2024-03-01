@@ -41,7 +41,8 @@ class TestPlayer : FunSpec({
         })
         val mokt = Mokt.Public(mockHttpClient)
         val playerNameData = mokt.getPlayerName(playerUuid1)
-        assert(playerNameData.name == playerName1 && playerNameData.uuid == playerUuid1)
+        playerNameData.name shouldBe playerName1
+        playerNameData.uuid shouldBe playerUuid1
     }
 
     test("test to get player uuid") {
@@ -50,7 +51,8 @@ class TestPlayer : FunSpec({
         })
         val mokt = Mokt.Public(mockHttpClient)
         val playerUUIDData = mokt.getPlayerUUID(username = playerName1)
-        assert(playerUUIDData.name == playerName1 && playerUUIDData.uuid == playerUuid1)
+        playerUUIDData.name shouldBe playerName1
+        playerUUIDData.uuid shouldBe playerUuid1
     }
 
     test("test to get player uuids with vararg") {
@@ -92,7 +94,8 @@ class TestPlayer : FunSpec({
     }
 
     test("test to get player profile without unsigned") {
-        val playerDataProperties = PlayerProfileProperties(name = "textures", value = "dGVzdAo=", signature = "signature")
+        val playerDataProperties =
+            PlayerProfileProperties(name = "textures", value = "dGVzdAo=", signature = "signature")
         val mockHttpClient = HttpClient(MockEngine {
             it.url.parameters["unsigned"] shouldBe "false"
             respond(Json.encodeToString(PlayerProfile(playerUuid1, playerName1, listOf(playerDataProperties), false)))
