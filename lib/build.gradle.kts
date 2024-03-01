@@ -89,6 +89,7 @@ tasks {
         kotlinOptions {
             jvmTarget = "1.8"
         }
+        dependsOn("generateTemplates")
     }
 
     test {
