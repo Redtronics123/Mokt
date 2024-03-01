@@ -24,12 +24,13 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 @Serializable(with = UUID.UUIDSerializer::class)
-data class UUID(
-    val value: String
-) {
+@JvmInline
+value class UUID(val value: String) {
     init {
-        require(value = value.length == 32) { "UUID must be 32 characters long" }
+        require(Regex("[0-9a-fA-F]{32}").matches(value)) { "UUID must be a 32 character long hex string" }
     }
+
+    override fun toString() = value
 
     internal object UUIDSerializer : KSerializer<UUID> {
         override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("UUID", PrimitiveKind.STRING)
