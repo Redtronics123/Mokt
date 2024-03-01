@@ -3,6 +3,10 @@ kotlin = "1.9.22"
 ktor = "2.3.8"
 logback = "1.5.0"
 serialization = "1.6.3"
+kotest = "5.8.0"
+dokka = "1.9.10"
+kover = "0.7.6"
+ktor-kotest = "2.0.0"
 
 [libraries]
 ### Ktor ###
@@ -20,12 +24,25 @@ ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negoti
 # Common
 ktor-seralization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
+# Test
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
+ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
+
 ### Logging ###
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 
 ### Serialization ###
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 
+### Kotest ###
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-assertions-ktor = { module = "io.kotest.extensions:kotest-assertions-ktor", version.ref = "ktor-kotest" }
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest" }
+kotest-junitxml = { module = "io.kotest:kotest-extensions-junitxml", version.ref = "kotest" }
+
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 serialization-json = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

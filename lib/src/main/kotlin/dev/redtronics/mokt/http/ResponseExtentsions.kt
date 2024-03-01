@@ -13,20 +13,16 @@
  * copies or substantial portions of the Software.
  */
 
-package dev.redtronics.mokt.entity
+package dev.redtronics.mokt.http
 
-import dev.redtronics.mokt.types.UUID
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import io.ktor.client.statement.*
+import io.ktor.http.*
 
-@Serializable
-data class PlayerUUID(
-    @SerialName("id")
-    val uuid: UUID,
-    val name: String
-)
-
-@Serializable
-data class PlayerUUIDPayload(
-    val usernames: List<String>
-)
+@Throws(Exception::class)
+suspend fun HttpResponse.requireSuccessful() {
+    if (status.isSuccess()) return
+    when(status) {
+        HttpStatusCode.TooManyRequests -> throw TooManyRequestsException()
+        else -> throw Exception("Request failed ($status): ${bodyAsText()}")
+    }
+}

@@ -13,11 +13,14 @@
  * copies or substantial portions of the Software.
  */
 
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.serialization.json)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.kover)
     `maven-publish`
 }
 
@@ -46,22 +49,27 @@ dependencies {
 
     // Common
     api(libs.ktor.seralization.json)
-}
 
-val targetJavaVersion = 21
-java {
-    JavaVersion.toVersion(targetJavaVersion).let { javaVersion ->
-        if (JavaVersion.current() < javaVersion) toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
-    }
-    withSourcesJar()
+    // Test
+    testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.kotest.assertions.ktor)
+    testImplementation(libs.kotest.property)
+    testImplementation(libs.kotest.junitxml)
+    testImplementation(libs.ktor.client.mock)
+    testImplementation(libs.ktor.server.test.host)
 }
 
 val minecraftApiUrl: String by project
+val minecraftServiceUrl: String by project
+val minecraftSessionUrl: String by project
 
 val templateSrc = "src/main/templates"
 val templateDest: File = project.layout.buildDirectory.file("generated/templates").get().asFile
 val templateProps: Map<String, Any> = mapOf(
-    "minecraftApiUrl" to minecraftApiUrl
+    "minecraftApiUrl" to minecraftApiUrl,
+    "minecraftServiceUrl" to minecraftServiceUrl,
+    "minecraftSessionUrl" to minecraftSessionUrl
 )
 
 tasks {
@@ -74,16 +82,72 @@ tasks {
         into(templateDest)
     }
 
-    withType<JavaCompile> {
-        options.encoding = "UTF-8"
-        dependsOn("generateTemplates")
-    }
-
     withType<KotlinCompile> {
         kotlinOptions {
-            jvmTarget = targetJavaVersion.toString()
+            jvmTarget = "1.8"
         }
-        dependsOn("generateTemplates")
+    }
+
+    test {
+        useJUnitPlatform()
+
+        reports {
+            junitXml.required = false
+        }
+
+        systemProperty("gradle.build.dir", project.layout.buildDirectory.asFile.get().absolutePath)
+    }
+
+    withType<DokkaTask> {
+        outputDirectory = layout.buildDirectory.dir("dokka")
+    }
+
+    create<Jar>("javadocJar") {
+        group = "build"
+        archiveClassifier.set("javadoc")
+        from(layout.buildDirectory.dir("dokka"))
+        dependsOn("dokkaJavadoc")
+    }
+
+    create<Jar>("sourcesJar") {
+        group = "build"
+        archiveClassifier.set("sources")
+        from(kotlin.sourceSets["main"].kotlin.srcDirs)
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    withSourcesJar()
+    withJavadocJar()
+}
+
+kotlin {
+    jvmToolchain(8)
+    sourceSets {
+        main {
+            kotlin.srcDir(templateDest)
+        }
+    }
+}
+
+koverReport {
+    filters {
+        includes {
+            packages("dev.redtronics.mokt")
+        }
+    }
+    defaults {
+        html {
+            setReportDir(layout.buildDirectory.dir("kover-reports/html-result"))
+            onCheck = true
+        }
+        xml {
+            setReportFile(layout.buildDirectory.file("kover-reports/result.xml"))
+            onCheck = true
+        }
     }
 }
 

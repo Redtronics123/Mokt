@@ -13,7 +13,7 @@
  * copies or substantial portions of the Software.
  */
 
-package dev.redtronics.mokt.http
+package dev.redtronics.mokt.types
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -23,22 +23,24 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-/**
- * This enum represents the status codes that can be returned by the server.
- * */
-@Serializable(with = StatusCode.StatusCodeSerializer::class)
-enum class StatusCode(val code: Int) {
-    NOT_FOUND(404);
+@Serializable(with = UUID.UUIDSerializer::class)
+@JvmInline
+value class UUID(val value: String) {
+    init {
+        require(Regex("[0-9a-fA-F]{32}").matches(value)) { "UUID must be a 32 character long hex string" }
+    }
 
-    internal object StatusCodeSerializer : KSerializer<StatusCode> {
-        override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("StatusCode", PrimitiveKind.INT)
+    override fun toString() = value
 
-        override fun serialize(encoder: Encoder, value: StatusCode) {
-            encoder.encodeInt(value.code)
+    internal object UUIDSerializer : KSerializer<UUID> {
+        override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("UUID", PrimitiveKind.STRING)
+
+        override fun serialize(encoder: Encoder, value: UUID) {
+            encoder.encodeString(value.value)
         }
 
-        override fun deserialize(decoder: Decoder): StatusCode {
-            return entries.associateBy { it.code }[decoder.decodeInt()] ?: throw IllegalArgumentException("Invalid status code")
+        override fun deserialize(decoder: Decoder): UUID {
+            return UUID(decoder.decodeString())
         }
     }
 }

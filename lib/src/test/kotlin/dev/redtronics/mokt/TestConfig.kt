@@ -13,20 +13,15 @@
  * copies or substantial portions of the Software.
  */
 
-package dev.redtronics.mokt.entity
+package dev.redtronics.mokt
 
-import dev.redtronics.mokt.types.UUID
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import io.kotest.core.config.AbstractProjectConfig
+import io.kotest.core.extensions.Extension
+import io.kotest.extensions.junitxml.JunitXmlReporter
 
-@Serializable
-data class PlayerUUID(
-    @SerialName("id")
-    val uuid: UUID,
-    val name: String
-)
-
-@Serializable
-data class PlayerUUIDPayload(
-    val usernames: List<String>
-)
+class TestConfig : AbstractProjectConfig() {
+    override fun extensions(): List<Extension> = listOf(JunitXmlReporter(
+        includeContainers = false,
+        useTestPathAsName = true
+    ))
+}

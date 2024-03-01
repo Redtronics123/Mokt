@@ -13,11 +13,25 @@
  * copies or substantial portions of the Software.
  */
 
-package dev.redtronics.mokt.annotations
+package dev.redtronics.mokt.entity
 
-/**
- * This annotation is used to mark a function as requiring authentication.
- * */
-@Repeatable
-@Target(AnnotationTarget.FUNCTION)
-annotation class AuthRequired
+import dev.redtronics.mokt.types.UUID
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+// TODO Decode String from properties
+@Serializable
+data class PlayerProfile(
+    @SerialName("id")
+    val uuid: UUID,
+    val name: String,
+    val properties: List<PlayerProfileProperties>,
+    val legacy: Boolean? = null,
+)
+
+@Serializable
+data class PlayerProfileProperties(
+    val name: String,
+    val value: String,
+    val signature: String? = null
+)
