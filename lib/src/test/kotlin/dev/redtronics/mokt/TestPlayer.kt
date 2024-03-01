@@ -67,6 +67,18 @@ class TestPlayer {
     @Test
     fun `test to get player profile without unsigned`() = runBlocking {
         val playerProfileData = mokt.getPlayerProfile(UUID(value = "430d7fb21add41b5b9217995f8cac3e7"), false)
-        println(playerProfileData)
+        if (playerProfileData.name != "Redtronics123") {
+            throw Exception("Player profile name is not Redtronics123")
+        }
+        assert(playerProfileData.legacy == null && playerProfileData.properties[0].signature != null)
+    }
+
+    @Test
+    fun `test to get player profile with unsigned`() = runBlocking {
+        val playerProfileData = mokt.getPlayerProfile(UUID(value = "430d7fb21add41b5b9217995f8cac3e7"), true)
+        if (playerProfileData.name != "Redtronics123") {
+            throw Exception("Player profile name is not Redtronics123")
+        }
+        assert(playerProfileData.legacy == null && playerProfileData.properties[0].signature == null)
     }
 }
