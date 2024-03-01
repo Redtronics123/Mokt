@@ -13,12 +13,15 @@
  * copies or substantial portions of the Software.
  */
 
-package dev.redtronics.mokt.annotations
+package dev.redtronics.mokt
 
-@Repeatable
-@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS, AnnotationTarget.PROPERTY, AnnotationTarget.FIELD)
-annotation class Deprecated(
-    val message: String = "",
-    val replaceWith: ReplaceWith = ReplaceWith(expression = ""),
-    val level: DeprecationLevel = DeprecationLevel.ERROR
-)
+import io.kotest.core.config.AbstractProjectConfig
+import io.kotest.core.extensions.Extension
+import io.kotest.extensions.junitxml.JunitXmlReporter
+
+class TestConfig : AbstractProjectConfig() {
+    override fun extensions(): List<Extension> = listOf(JunitXmlReporter(
+        includeContainers = false,
+        useTestPathAsName = true
+    ))
+}

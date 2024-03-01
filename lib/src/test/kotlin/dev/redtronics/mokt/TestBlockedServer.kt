@@ -15,22 +15,27 @@
 
 package dev.redtronics.mokt
 
-import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Test
-import kotlin.test.assertTrue
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.collections.shouldHaveSize
+import io.ktor.client.*
+import io.ktor.client.engine.mock.*
 
-class TestBlockedServer {
-    private val mokt = Mokt()
-
-    @Test
-    fun `test to get blocked server without limit`() = runBlocking {
+class TestBlockedServer: FunSpec({
+    test("test to get blocked server without limit") {
+        val mockHttpClient = HttpClient(MockEngine {
+            respond(List(25) {"test"}.joinToString(separator = "\n"))
+        })
+        val mokt = Mokt.Public(mockHttpClient)
         val blockedServer = mokt.getBlockedServer(limit = 0)
-        assertTrue(actual = blockedServer.hashedAddresses.isNotEmpty())
+        blockedServer.hashedAddresses.shouldHaveSize(25)
     }
 
-    @Test
-    fun `test to get blocked server with limit`() = runBlocking {
+    test("test to get blocked server with limit") {
+        val mockHttpClient = HttpClient(MockEngine {
+            respond(List(25) {"test"}.joinToString(separator = "\n"))
+        })
+        val mokt = Mokt.Public(mockHttpClient)
         val blockedServer = mokt.getBlockedServer(limit = 20)
-        assertTrue(actual = blockedServer.hashedAddresses.size == 20)
+        blockedServer.hashedAddresses.shouldHaveSize(20)
     }
-}
+})

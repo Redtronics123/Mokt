@@ -15,70 +15,109 @@
 
 package dev.redtronics.mokt
 
+import dev.redtronics.mokt.entity.PlayerName
+import dev.redtronics.mokt.entity.PlayerProfile
+import dev.redtronics.mokt.entity.PlayerProfileProperties
+import dev.redtronics.mokt.entity.PlayerUUID
 import dev.redtronics.mokt.types.UUID
-import kotlinx.coroutines.runBlocking
-import kotlin.test.Test
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.shouldBe
+import io.ktor.client.*
+import io.ktor.client.engine.mock.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
-class TestPlayer {
-    private val mokt = Mokt()
+class TestPlayer : FunSpec({
+    val playerName1 = "playerName1"
+    val playerUuid1 = UUID("11111111111111111111111111111111")
+    val playerName2 = "playerName2"
+    val playerUuid2 = UUID("00000000000000000000000000000000")
 
-    @Test
-    fun `test to get player name`() = runBlocking {
-        val uuid = "430d7fb21add41b5b9217995f8cac3e7"
-        val playerNameData = mokt.getPlayerName(UUID(value = "430d7fb21add41b5b9217995f8cac3e7"))
-        assert(playerNameData.name == "Redtronics123" && playerNameData.uuid == uuid)
+    test("test to get player name") {
+        val mockHttpClient = HttpClient(MockEngine {
+            respond(Json.encodeToString(PlayerName(playerName1, playerUuid1)))
+        })
+        val mokt = Mokt.Public(mockHttpClient)
+        val playerNameData = mokt.getPlayerName(playerUuid1)
+        assert(playerNameData.name == playerName1 && playerNameData.uuid == playerUuid1)
     }
 
-    @Test
-    fun `test to get player uuid`() = runBlocking {
-        val playerName = "Redtronics123"
-        val playerUUIDData = mokt.getPlayerUUID(username = playerName)
-        assert(playerUUIDData.name == playerName && playerUUIDData.uuid.value == "430d7fb21add41b5b9217995f8cac3e7")
+    test("test to get player uuid") {
+        val mockHttpClient = HttpClient(MockEngine {
+            respond(Json.encodeToString(PlayerUUID(playerUuid1, playerName1)))
+        })
+        val mokt = Mokt.Public(mockHttpClient)
+        val playerUUIDData = mokt.getPlayerUUID(username = playerName1)
+        assert(playerUUIDData.name == playerName1 && playerUUIDData.uuid == playerUuid1)
     }
 
-    @Test
-    fun `test to get player uuids with vararg`() = runBlocking {
-        val playerUUIDsData = mokt.getPlayerUUIDs("Redtronics123", "Notch")
-        if (playerUUIDsData.size != 2) {
-            throw Exception("Player UUIDs size is not 2")
-        }
-
-        when(playerUUIDsData[0].name) {
-            "Redtronics123" -> assert(playerUUIDsData[0].uuid.value == "430d7fb21add41b5b9217995f8cac3e7" && playerUUIDsData[1].name == "Notch" && playerUUIDsData[1].uuid.value == "069a79f444e94726a5befca90e38aaf5")
-            "Notch" -> assert(playerUUIDsData[0].uuid.value == "069a79f444e94726a5befca90e38aaf5" && playerUUIDsData[1].name == "Redtronics123" && playerUUIDsData[1].uuid.value == "430d7fb21add41b5b9217995f8cac3e7")
-            else -> throw Exception("Player UUIDs are not correct")
-        }
+    test("test to get player uuids with vararg") {
+        val mockHttpClient = HttpClient(MockEngine {
+            respond(
+                Json.encodeToString(
+                    listOf(
+                        PlayerUUID(playerUuid1, playerName1),
+                        PlayerUUID(playerUuid2, playerName2)
+                    )
+                )
+            )
+        })
+        val mokt = Mokt.Public(mockHttpClient)
+        val playerUUIDsData = mokt.getPlayerUUIDs(playerName1, playerName2)
+        playerUUIDsData.shouldContainExactlyInAnyOrder(
+            PlayerUUID(playerUuid1, playerName1),
+            PlayerUUID(playerUuid2, playerName2)
+        )
     }
 
-    @Test
-    fun `test to get player uuids with list`() = runBlocking {
-        val playerUUIDsData = mokt.getPlayerUUIDs(mutableListOf("Redtronics123", "Notch"))
-        if (playerUUIDsData.size != 2) {
-            throw Exception("Player UUIDs size is not 2")
-        }
-
-        when(playerUUIDsData[0].name) {
-            "Redtronics123" -> assert(playerUUIDsData[0].uuid.value == "430d7fb21add41b5b9217995f8cac3e7" && playerUUIDsData[1].name == "Notch" && playerUUIDsData[1].uuid.value == "069a79f444e94726a5befca90e38aaf5")
-            "Notch" -> assert(playerUUIDsData[0].uuid.value == "069a79f444e94726a5befca90e38aaf5" && playerUUIDsData[1].name == "Redtronics123" && playerUUIDsData[1].uuid.value == "430d7fb21add41b5b9217995f8cac3e7")
-            else -> throw Exception("Player UUIDs are not correct")
-        }
+    test("test to get player uuids with list") {
+        val mockHttpClient = HttpClient(MockEngine {
+            respond(
+                Json.encodeToString(
+                    listOf(
+                        PlayerUUID(playerUuid1, playerName1),
+                        PlayerUUID(playerUuid2, playerName2)
+                    )
+                )
+            )
+        })
+        val mokt = Mokt.Public(mockHttpClient)
+        val playerUUIDsData = mokt.getPlayerUUIDs(mutableListOf(playerName1, playerName2))
+        playerUUIDsData.shouldContainExactlyInAnyOrder(
+            PlayerUUID(playerUuid1, playerName1),
+            PlayerUUID(playerUuid2, playerName2)
+        )
     }
 
-    @Test
-    fun `test to get player profile without unsigned`() = runBlocking {
-        val playerProfileData = mokt.getPlayerProfile(UUID(value = "430d7fb21add41b5b9217995f8cac3e7"), false)
-        if (playerProfileData.name != "Redtronics123") {
-            throw Exception("Player profile name is not Redtronics123")
-        }
-        assert(playerProfileData.legacy == null && playerProfileData.properties[0].signature != null)
+    test("test to get player profile without unsigned") {
+        val playerDataProperties = PlayerProfileProperties(name = "textures", value = "dGVzdAo=", signature = "signature")
+        val mockHttpClient = HttpClient(MockEngine {
+            it.url.parameters["unsigned"] shouldBe "false"
+            respond(Json.encodeToString(PlayerProfile(playerUuid1, playerName1, listOf(playerDataProperties), false)))
+        })
+        val mokt = Mokt.Public(mockHttpClient)
+        val playerProfileData = mokt.getPlayerProfile(playerUuid1, false)
+        playerProfileData.name shouldBe playerName1
+        playerProfileData.uuid shouldBe playerUuid1
+        playerProfileData.legacy shouldBe false
+        playerProfileData.properties.shouldContainExactly(playerDataProperties)
     }
 
-    @Test
-    fun `test to get player profile with unsigned`() = runBlocking {
-        val playerProfileData = mokt.getPlayerProfile(UUID(value = "430d7fb21add41b5b9217995f8cac3e7"), true)
-        if (playerProfileData.name != "Redtronics123") {
-            throw Exception("Player profile name is not Redtronics123")
-        }
-        assert(playerProfileData.legacy == null && playerProfileData.properties[0].signature == null)
+    test("test to get player profile with unsigned") {
+        val playerDataProperties = PlayerProfileProperties(name = "textures", value = "dGVzdAo=", signature = null)
+        val mockHttpClient = HttpClient(MockEngine {
+            it.url.parameters["unsigned"] shouldBe "true"
+            respond(Json.encodeToString(PlayerProfile(playerUuid1, playerName1, listOf(playerDataProperties), false)))
+        })
+        val mokt = Mokt.Public(mockHttpClient)
+        val playerProfileData = mokt.getPlayerProfile(playerUuid1, true)
+        playerProfileData.name shouldBe playerName1
+        playerProfileData.uuid shouldBe playerUuid1
+        playerProfileData.legacy shouldBe false
+        playerProfileData.properties.shouldContainExactly(playerDataProperties)
     }
-}
+})
