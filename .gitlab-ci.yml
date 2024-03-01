@@ -24,7 +24,7 @@ convert-coverage-report:
     - if: $ENABLE_CHECK == "true" && $CI_COMMIT_TAG == null
   script:
     # convert report from jacoco to cobertura, using relative project path
-    - python /opt/cover2cover.py build/kover-reports/result.xml $CI_PROJECT_DIR/src/main/kotlin/ > build/kover-reports/cobertura.xml
+    - python /opt/cover2cover.py lib/build/kover-reports/result.xml $CI_PROJECT_DIR/lib/src/main/kotlin/ > cobertura.xml
   needs:
     - job: test
       artifacts: true
@@ -32,4 +32,4 @@ convert-coverage-report:
     reports:
       coverage_report:
         coverage_format: cobertura
-        path: build/kover-reports/cobertura.xml
+        path: cobertura.xml
