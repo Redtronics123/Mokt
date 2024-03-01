@@ -28,5 +28,5 @@ data class PlayerUUID(
 
 @Serializable
 data class PlayerUUIDPayload(
-    val usernames: MutableList<String>
+    val usernames: List<String>
 )

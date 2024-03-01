@@ -25,9 +25,8 @@ data class PlayerProfile(
     @SerialName("id")
     val uuid: UUID,
     val name: String,
-    val properties: MutableList<PlayerProfileProperties>,
+    val properties: List<PlayerProfileProperties>,
     val legacy: Boolean? = null,
-    val profileActions: MutableList<String>
 )
 
 @Serializable
