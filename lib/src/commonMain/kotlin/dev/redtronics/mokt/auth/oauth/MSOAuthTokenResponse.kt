@@ -17,7 +17,6 @@ package dev.redtronics.mokt.auth.oauth
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.uuid.UUID
 
 @Serializable
 data class OAuthCode(
