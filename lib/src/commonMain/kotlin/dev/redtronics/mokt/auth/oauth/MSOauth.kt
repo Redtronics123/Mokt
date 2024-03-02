@@ -32,8 +32,6 @@ import kotlinx.html.HTML
 import kotlinx.uuid.UUID
 import kotlinx.uuid.generateUUID
 
-expect suspend fun MSOauth.openInBrowser(url: String)
-
 class MSOauth(
     private val clientId: String,
     private val httpClient: HttpClient,
@@ -41,12 +39,12 @@ class MSOauth(
     private val redirectPath: String = "/callback"
 ) {
     init {
-        require(redirectPath.startsWith("/"))
+        require(redirectPath.startsWith("/")) { "redirectPath must start with /" }
     }
 
     private val redirectUrl = "http://localhost:$port$redirectPath"
 
-    suspend fun getMSToken(openInBrowser: Boolean = false, responsePage: HTML.() -> Unit): MSTokenOauthResponse {
+    suspend fun getMSToken(openInBrowser: (String) -> Unit, responsePage: HTML.() -> Unit = {}): MSTokenOauthResponse {
         val channel: Channel<OAuthCode> = Channel()
         val server = embeddedServer(CIO, port = port, host = "127.0.0.1") {
             setup()
@@ -58,39 +56,39 @@ class MSOauth(
             host = "login.microsoftonline.com"
             path("consumers", "oauth2", "v2.0", "authorize")
             parameters.apply {
-                append("client_id", clientId)
-                append("response_type", "code")
-                append("redirect_uri", redirectUrl)
-                append("response_mode", "query")
-                append("scope", "user.read")
-                append("state", generateUniqueIdentifier())
+                append(name = "client_id", value = clientId)
+                append(name = "response_type", value = "code")
+                append(name = "redirect_uri", value = redirectUrl)
+                append(name = "response_mode", value = "query")
+                append(name = "scope", value = "XBoxLive.signin offline_access email openid")
+                append(name = "state", value = generateUniqueIdentifier())
             }
         }
 
-        if (openInBrowser) openInBrowser(url)
+        openInBrowser(url)
 
         val authCode = channel.receive()
-        val tokenResponse = httpClient.submitForm(encodeInQuery = false) {
-            url {
-                protocol = URLProtocol.HTTPS
-                host = "login.microsoftonline.com"
-                path("consumers", "oauth2", "v2.0", "token")
-            }
-            formData {
-                append("client_id", clientId)
-                append(key = "scope", value = "XBoxLive.signin offline_access email openid")
-                append("code", authCode.code)
-                append("redirect_uri", redirectUrl)
-                append("grant_type", "authorization_code")
-            }
-        }
+        val tokenResponse = httpClient.submitForm(
+            url = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token",
+            formParameters = parameters {
+                append(name = "client_id", value = clientId)
+                append(name = "scope", value = "XBoxLive.signin offline_access email openid")
+                append(name = "code", value = authCode.code)
+                append(name = "redirect_uri", value = redirectUrl)
+                append(name = "grant_type", value = "authorization_code")
+            },
+            encodeInQuery = false
+        )
 
         if (!tokenResponse.status.isSuccess()) {
             val errorResponse: MSTokenOauthErrorResponse = tokenResponse.body()
             error("Failed to get token: ${tokenResponse.status}, ${errorResponse.error}: ${errorResponse.errorDescription}")
         }
-        server.stop(gracePeriodMillis = 1000, timeoutMillis = 1000)
-        return tokenResponse.body<MSTokenOauthResponse>()
+
+        val response: MSTokenOauthResponse = tokenResponse.body()
+        server.stop()
+
+        return response
     }
 
     companion object {
