@@ -78,6 +78,9 @@ kotlin {
 
                 // UUID
                 implementation(libs.uuid)
+
+                // DateTime
+                implementation(libs.kotlinx.datetime)
             }
         }
         commonTest {
@@ -139,25 +142,6 @@ tasks {
         }
     }
 }
-
-//
-//koverReport {
-//    filters {
-//        includes {
-//            packages("dev.redtronics.mokt")
-//        }
-//    }
-//    defaults {
-//        html {
-//            setReportDir(layout.buildDirectory.dir("kover-reports/html-result"))
-//            onCheck = true
-//        }
-//        xml {
-//            setReportFile(layout.buildDirectory.file("kover-reports/result.xml"))
-//            onCheck = true
-//        }
-//    }
-//}
 
 publishing {
     publications {
