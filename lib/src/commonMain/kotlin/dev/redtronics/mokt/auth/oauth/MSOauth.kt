@@ -15,12 +15,17 @@
 
 package dev.redtronics.mokt.auth.oauth
 
+import dev.redtronics.mokt.auth.oauth.payload.XBoxOAuthPayload
+import dev.redtronics.mokt.auth.oauth.payload.XboxAuthProperties
 import dev.redtronics.mokt.auth.oauth.response.MSTokenOauthErrorResponse
 import dev.redtronics.mokt.auth.oauth.response.MSTokenOauthResponse
 import dev.redtronics.mokt.auth.oauth.response.OAuthCode
+import dev.redtronics.mokt.auth.oauth.response.XBoxOAuthResponse
 import dev.redtronics.mokt.auth.oauth.server.routing
 import dev.redtronics.mokt.auth.oauth.server.setup
+import dev.redtronics.mokt.http.requireSuccessful
 import io.ktor.client.*
+import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -48,7 +53,7 @@ class MSOauth(
 
     private val redirectUrl = "http://localhost:$port$redirectPath"
 
-    suspend fun getMSToken(openInBrowser: (String) -> Unit, responsePage: HTML.() -> Unit = {}): MSTokenOauthResponse {
+    suspend fun getMSToken(openInBrowser: suspend (String) -> Unit, responsePage: HTML.() -> Unit = {}): MSTokenOauthResponse {
         val channel: Channel<OAuthCode> = Channel()
         val server = embeddedServer(CIO, port = port, host = "127.0.0.1") {
             setup()
@@ -84,15 +89,34 @@ class MSOauth(
             encodeInQuery = false
         )
 
-        if (!tokenResponse.status.isSuccess()) {
-            val errorResponse: MSTokenOauthErrorResponse = json.decodeFromString(tokenResponse.bodyAsText())
-            error("Failed to get token: ${tokenResponse.status}, ${errorResponse.error}: ${errorResponse.errorDescription}")
+        tokenResponse.requireSuccessful()
+        val response: MSTokenOauthResponse = json.decodeFromString(tokenResponse.bodyAsText())
+
+        server.stop()
+        return response
+    }
+
+    suspend fun getXboxToken(msOAuthToken: String): XBoxOAuthResponse {
+        val xboxOAuthPayload = XBoxOAuthPayload(
+            properties = XboxAuthProperties(
+                authMethod = "RPS",
+                siteName = "user.auth.xboxlive.com",
+                rpsTicket = "d=$msOAuthToken"
+            ),
+            replyingParty = "http://auth.xboxlive.com",
+            tokenType = "JWT"
+        )
+
+        val xboxAuthResponse = httpClient.post {
+            headers {
+                append(name = "Content-Type", value = "application/json")
+            }
+            url(urlString = "https://user.auth.xboxlive.com/user/authenticate")
+            setBody(xboxOAuthPayload)
         }
 
-        val response: MSTokenOauthResponse = json.decodeFromString(tokenResponse.bodyAsText())
-        server.stop()
-
-        return response
+        xboxAuthResponse.requireSuccessful()
+        return json.decodeFromString(xboxAuthResponse.bodyAsText())
     }
 
     companion object {
