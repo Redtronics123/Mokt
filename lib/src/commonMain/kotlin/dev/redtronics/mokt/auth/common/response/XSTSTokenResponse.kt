@@ -13,14 +13,14 @@
  * copies or substantial portions of the Software.
  */
 
-package dev.redtronics.mokt.auth.oauth.response
+package dev.redtronics.mokt.auth.common.response
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class XBoxOAuthResponse(
+data class XSTSAuthResponse(
     @SerialName("IssueInstant")
     val issueInstant: Instant,
     @SerialName("NotAfter")
@@ -29,14 +29,4 @@ data class XBoxOAuthResponse(
     val token: String,
     @SerialName("DisplayClaims")
     val displayClaim: DisplayClaim
-)
-
-@Serializable
-data class DisplayClaim(
-    val xui: List<Xui>
-)
-
-@Serializable
-data class Xui(
-    val uhs: String
 )

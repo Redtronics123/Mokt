@@ -13,7 +13,7 @@
  * copies or substantial portions of the Software.
  */
 
-package dev.redtronics.mokt.auth.oauth.response
+package dev.redtronics.mokt.auth.oauth
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

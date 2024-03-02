@@ -13,13 +13,13 @@
  * copies or substantial portions of the Software.
  */
 
-package dev.redtronics.mokt.auth.oauth.payload
+package dev.redtronics.mokt.auth.common.payload
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class XSTSOAuthTokenPayload(
+data class XSTSTokenPayload(
     @SerialName("Properties")
     val properties: XSTSOAuthTokenProperties,
     @SerialName("RelyingParty")
