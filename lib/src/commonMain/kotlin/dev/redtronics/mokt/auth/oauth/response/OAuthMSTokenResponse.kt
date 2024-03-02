@@ -15,9 +15,41 @@
 
 package dev.redtronics.mokt.auth.oauth.response
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.uuid.UUID
 
 @Serializable
 data class OAuthCode(
     val code: String
+)
+
+@Serializable
+data class MSTokenOauthErrorResponse(
+    @SerialName("correlation_id")
+    val correlationId: UUID,
+    val error: String,
+    @SerialName("error_codes")
+    val errorCodes: List<Int>,
+    @SerialName("error_description")
+    val errorDescription: String,
+    @SerialName("trace_id")
+    val traceId: UUID,
+)
+
+@Serializable
+data class MSTokenOauthResponse(
+    @SerialName("access_token")
+    val accessToken: String,
+    @SerialName("expires_in")
+    val expiresIn: Int,
+    @SerialName("ext_expires_in")
+    val extExpiresIn: Int,
+    @SerialName("id_token")
+    val idToken: String,
+    @SerialName("refresh_token")
+    val refreshToken: String,
+    val scope: String,
+    @SerialName("token_type")
+    val tokenType: String,
 )
