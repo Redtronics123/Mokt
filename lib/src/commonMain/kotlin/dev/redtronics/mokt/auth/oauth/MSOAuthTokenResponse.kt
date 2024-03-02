@@ -38,5 +38,5 @@ data class MSTokenOauthResponse(
     val refreshToken: String,
     val scope: String,
     @SerialName("token_type")
-    val tokenType: String,
+    val tokenType: String
 )
