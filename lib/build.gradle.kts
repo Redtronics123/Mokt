@@ -112,6 +112,14 @@ tasks {
         into(templateDest)
     }
 
+    dokkaHtml {
+        this.moduleName.set("Mokt")
+    }
+
+    withType<org.gradle.jvm.tasks.Jar> {
+        dependsOn("generateTemplates")
+    }
+
     withType<KotlinCompile<*>> {
         dependsOn("generateTemplates")
     }
