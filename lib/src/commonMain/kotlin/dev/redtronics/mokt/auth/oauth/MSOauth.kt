@@ -21,20 +21,24 @@ import dev.redtronics.mokt.auth.oauth.response.OAuthCode
 import dev.redtronics.mokt.auth.oauth.server.routing
 import dev.redtronics.mokt.auth.oauth.server.setup
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.request.forms.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.server.util.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.html.HTML
+import kotlinx.serialization.json.Json
 import kotlinx.uuid.UUID
 import kotlinx.uuid.generateUUID
 
 class MSOauth(
     private val clientId: String,
     private val httpClient: HttpClient,
+    private val json: Json = Json {
+        ignoreUnknownKeys = true
+    },
     private val port: Int = 59001,
     private val redirectPath: String = "/callback"
 ) {
@@ -81,11 +85,11 @@ class MSOauth(
         )
 
         if (!tokenResponse.status.isSuccess()) {
-            val errorResponse: MSTokenOauthErrorResponse = tokenResponse.body()
+            val errorResponse: MSTokenOauthErrorResponse = json.decodeFromString(tokenResponse.bodyAsText())
             error("Failed to get token: ${tokenResponse.status}, ${errorResponse.error}: ${errorResponse.errorDescription}")
         }
 
-        val response: MSTokenOauthResponse = tokenResponse.body()
+        val response: MSTokenOauthResponse = json.decodeFromString(tokenResponse.bodyAsText())
         server.stop()
 
         return response
