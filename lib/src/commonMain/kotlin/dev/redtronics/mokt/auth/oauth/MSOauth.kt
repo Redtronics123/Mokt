@@ -15,14 +15,12 @@
 
 package dev.redtronics.mokt.auth.oauth
 
-import dev.redtronics.mokt.auth.oauth.payload.XBoxOAuthPayload
-import dev.redtronics.mokt.auth.oauth.payload.XSTSOAuthTokenPayload
-import dev.redtronics.mokt.auth.oauth.payload.XSTSOAuthTokenProperties
-import dev.redtronics.mokt.auth.oauth.payload.XboxAuthProperties
-import dev.redtronics.mokt.auth.oauth.response.MSTokenOauthResponse
-import dev.redtronics.mokt.auth.oauth.response.OAuthCode
-import dev.redtronics.mokt.auth.oauth.response.XBoxOAuthResponse
-import dev.redtronics.mokt.auth.oauth.response.XSTSOAuthResponse
+import dev.redtronics.mokt.auth.common.payload.MojangAuthPayload
+import dev.redtronics.mokt.auth.common.payload.XSTSTokenPayload
+import dev.redtronics.mokt.auth.common.payload.XSTSOAuthTokenProperties
+import dev.redtronics.mokt.auth.common.response.MojangAuthResponse
+import dev.redtronics.mokt.auth.common.response.XBoxAuthResponse
+import dev.redtronics.mokt.auth.common.response.XSTSAuthResponse
 import dev.redtronics.mokt.auth.oauth.server.routing
 import dev.redtronics.mokt.auth.oauth.server.setup
 import dev.redtronics.mokt.http.requireSuccessful
@@ -101,7 +99,7 @@ class MSOauth(
         return response
     }
 
-    suspend fun getXboxToken(msOAuthToken: String): XBoxOAuthResponse {
+    suspend fun getXboxToken(msOAuthToken: String): XBoxAuthResponse {
         val xboxOAuthPayload = XBoxOAuthPayload(
             properties = XboxAuthProperties(
                 authMethod = "RPS",
@@ -114,7 +112,7 @@ class MSOauth(
 
         val xboxAuthResponse = httpClient.post {
             headers {
-                append(name = "Content-Type", value = "application/json")
+                contentType(ContentType.Application.Json)
             }
             url(urlString = "https://user.auth.xboxlive.com/user/authenticate")
             setBody(xboxOAuthPayload)
@@ -124,11 +122,11 @@ class MSOauth(
         return json.decodeFromString(xboxAuthResponse.bodyAsText())
     }
 
-    suspend fun getXstsToken(xBoxOAuthResponse: XBoxOAuthResponse): XSTSOAuthResponse {
-        val xstsTokenPayload = XSTSOAuthTokenPayload(
+    suspend fun getXstsToken(xBoxAuthResponse: XBoxAuthResponse): XSTSAuthResponse {
+        val xstsTokenPayload = XSTSTokenPayload(
             properties = XSTSOAuthTokenProperties(
                 sandboxId = "RETAIL",
-                userTokens = listOf(xBoxOAuthResponse.token)
+                userTokens = listOf(xBoxAuthResponse.token)
             ),
             relyingParty = "rp://api.minecraftservices.com/",
             tokenType = "JWT"
@@ -136,7 +134,7 @@ class MSOauth(
 
         val xstsTokenResponse = httpClient.post {
             headers {
-                append(name = "Content-Type", value = "application/json")
+                contentType(ContentType.Application.Json)
             }
             url(urlString = "https://xsts.auth.xboxlive.com/xsts/authorize")
             setBody(xstsTokenPayload)
@@ -144,6 +142,24 @@ class MSOauth(
 
         xstsTokenResponse.requireSuccessful()
         return json.decodeFromString(xstsTokenResponse.bodyAsText())
+    }
+
+    suspend fun getMojangAuthToken(xstsAuthResponse: XSTSAuthResponse): MojangAuthResponse {
+        val mojangAuthPayload = MojangAuthPayload(
+            identityToken = "XBL3.0 x=${xstsAuthResponse.displayClaim.xui[0].uhs};${xstsAuthResponse.token}",
+            ensureLegacyEnabled = false
+        )
+
+        val minecraftResponse = httpClient.post {
+            headers {
+                contentType(ContentType.Application.Json)
+            }
+            url("https://api.minecraftservices.com/authentication/login_with_xbox")
+            setBody(mojangAuthPayload)
+        }
+
+        minecraftResponse.requireSuccessful()
+        return json.decodeFromString(minecraftResponse.bodyAsText())
     }
 
     companion object {
