@@ -24,7 +24,6 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
-import io.ktor.http.cio.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.server.util.*
@@ -90,6 +89,7 @@ class MSOauth(
             val errorResponse: MSTokenOauthErrorResponse = tokenResponse.body()
             error("Failed to get token: ${tokenResponse.status}, ${errorResponse.error}: ${errorResponse.errorDescription}")
         }
+        server.stop(gracePeriodMillis = 1000, timeoutMillis = 1000)
         return tokenResponse.body<MSTokenOauthResponse>()
     }
 
