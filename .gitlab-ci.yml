@@ -8,6 +8,7 @@ include:
 
 variables:
   ENABLE_CHECK: "true"
+  SUB_IMAGE: "docs"
 
 test:
   artifacts:
