@@ -13,9 +13,19 @@
  * copies or substantial portions of the Software.
  */
 
-package dev.redtronics.mokt.auth.oauth.response
+package dev.redtronics.mokt.auth.oauth
 
-import kotlinx.serialization.Serializable
+import dev.redtronics.mokt.auth.oauth.response.OAuthCode
+import dev.redtronics.mokt.auth.oauth.server.routing
+import dev.redtronics.mokt.auth.oauth.server.setup
+import io.ktor.client.*
+import io.ktor.server.cio.*
+import io.ktor.server.engine.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.uuid.UUID
+import kotlinx.uuid.generateUUID
+
+expect suspend fun MSOauth.openInBrowser(url: String)
 
 @Serializable
 data class AuthCode(val code: String)
