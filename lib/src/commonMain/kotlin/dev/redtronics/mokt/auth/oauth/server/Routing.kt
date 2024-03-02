@@ -15,7 +15,7 @@
 
 package dev.redtronics.mokt.auth.oauth.server
 
-import dev.redtronics.mokt.auth.oauth.response.OAuthCode
+import dev.redtronics.mokt.auth.oauth.OAuthCode
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.html.*
