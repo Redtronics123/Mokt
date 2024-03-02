@@ -21,6 +21,7 @@ import dev.redtronics.mokt.auth.common.payload.XSTSOAuthTokenProperties
 import dev.redtronics.mokt.auth.common.response.MojangAuthResponse
 import dev.redtronics.mokt.auth.common.response.XBoxAuthResponse
 import dev.redtronics.mokt.auth.common.response.XSTSAuthResponse
+import dev.redtronics.mokt.auth.oauth.html.defaultResponsePage
 import dev.redtronics.mokt.auth.oauth.server.routing
 import dev.redtronics.mokt.auth.oauth.server.setup
 import dev.redtronics.mokt.http.requireSuccessful
@@ -55,7 +56,7 @@ class MSOauth(
 
     suspend fun getMSToken(
         openInBrowser: suspend (String) -> Unit,
-        responsePage: HTML.() -> Unit = {}
+        responsePage: HTML.() -> Unit = { defaultResponsePage() }
     ): MSTokenOauthResponse {
         val channel: Channel<OAuthCode> = Channel()
         val server = embeddedServer(CIO, port = port, host = "127.0.0.1") {
