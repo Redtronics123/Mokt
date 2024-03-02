@@ -2,6 +2,9 @@ include:
   - project: templates/gitlab-ci
     ref: "master"
     file: java-build-publish.yaml
+  - project: templates/gitlab-ci
+    ref: "master"
+    file: container-image.yaml
 
 variables:
   ENABLE_CHECK: "true"
@@ -13,3 +16,9 @@ test:
     reports:
       junit:
         - "**/build/test-results/test/TEST-*.xml"
+
+container:
+  stage: publish
+  only:
+    - tags
+  extends: .build_with_kaniko
