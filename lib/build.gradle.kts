@@ -74,6 +74,9 @@ kotlin {
 
                 // Ktor Common
                 api(libs.ktor.seralization.json)
+
+                // UUID
+                api(libs.uuid)
             }
         }
         commonTest {
