@@ -25,19 +25,6 @@ data class OAuthCode(
 )
 
 @Serializable
-data class MSTokenOauthErrorResponse(
-    @SerialName("correlation_id")
-    val correlationId: UUID,
-    val error: String,
-    @SerialName("error_codes")
-    val errorCodes: List<Int>,
-    @SerialName("error_description")
-    val errorDescription: String,
-    @SerialName("trace_id")
-    val traceId: UUID,
-)
-
-@Serializable
 data class MSTokenOauthResponse(
     @SerialName("access_token")
     val accessToken: String,
