@@ -71,6 +71,7 @@ kotlin {
                 api(libs.ktor.server.core)
                 api(libs.ktor.server.cio)
                 api(libs.ktor.server.content.negotiation)
+                api(libs.ktor.server.html)
 
                 // Ktor Common
                 api(libs.ktor.seralization.json)
