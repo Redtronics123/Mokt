@@ -16,11 +16,13 @@
 package dev.redtronics.mokt.auth.oauth
 
 import dev.redtronics.mokt.auth.oauth.payload.XBoxOAuthPayload
+import dev.redtronics.mokt.auth.oauth.payload.XSTSOAuthTokenPayload
+import dev.redtronics.mokt.auth.oauth.payload.XSTSOAuthTokenProperties
 import dev.redtronics.mokt.auth.oauth.payload.XboxAuthProperties
-import dev.redtronics.mokt.auth.oauth.response.MSTokenOauthErrorResponse
 import dev.redtronics.mokt.auth.oauth.response.MSTokenOauthResponse
 import dev.redtronics.mokt.auth.oauth.response.OAuthCode
 import dev.redtronics.mokt.auth.oauth.response.XBoxOAuthResponse
+import dev.redtronics.mokt.auth.oauth.response.XSTSOAuthResponse
 import dev.redtronics.mokt.auth.oauth.server.routing
 import dev.redtronics.mokt.auth.oauth.server.setup
 import dev.redtronics.mokt.http.requireSuccessful
@@ -45,7 +47,7 @@ class MSOauth(
         ignoreUnknownKeys = true
     },
     private val port: Int = 59001,
-    private val redirectPath: String = "/callback"
+    private val redirectPath: String = "/callback",
 ) {
     init {
         require(redirectPath.startsWith("/")) { "redirectPath must start with /" }
@@ -53,7 +55,10 @@ class MSOauth(
 
     private val redirectUrl = "http://localhost:$port$redirectPath"
 
-    suspend fun getMSToken(openInBrowser: suspend (String) -> Unit, responsePage: HTML.() -> Unit = {}): MSTokenOauthResponse {
+    suspend fun getMSToken(
+        openInBrowser: suspend (String) -> Unit,
+        responsePage: HTML.() -> Unit = {}
+    ): MSTokenOauthResponse {
         val channel: Channel<OAuthCode> = Channel()
         val server = embeddedServer(CIO, port = port, host = "127.0.0.1") {
             setup()
@@ -117,6 +122,28 @@ class MSOauth(
 
         xboxAuthResponse.requireSuccessful()
         return json.decodeFromString(xboxAuthResponse.bodyAsText())
+    }
+
+    suspend fun getXstsToken(xBoxOAuthResponse: XBoxOAuthResponse): XSTSOAuthResponse {
+        val xstsTokenPayload = XSTSOAuthTokenPayload(
+            properties = XSTSOAuthTokenProperties(
+                sandboxId = "RETAIL",
+                userTokens = listOf(xBoxOAuthResponse.token)
+            ),
+            relyingParty = "rp://api.minecraftservices.com/",
+            tokenType = "JWT"
+        )
+
+        val xstsTokenResponse = httpClient.post {
+            headers {
+                append(name = "Content-Type", value = "application/json")
+            }
+            url(urlString = "https://xsts.auth.xboxlive.com/xsts/authorize")
+            setBody(xstsTokenPayload)
+        }
+
+        xstsTokenResponse.requireSuccessful()
+        return json.decodeFromString(xstsTokenResponse.bodyAsText())
     }
 
     companion object {
