@@ -151,5 +151,15 @@ sealed class Mokt(
             response.requireSuccessful()
             return json.decodeFromString(response.bodyAsText())
         }
+
+        suspend fun getPlayerBlocklist(): PlayerBlocklist {
+            val response = httpClient.get {
+                getHeader()
+                url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/privacy/blocklist")
+            }
+
+            response.requireSuccessful()
+            return json.decodeFromString(response.bodyAsText())
+        }
     }
 }
