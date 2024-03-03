@@ -115,7 +115,7 @@ sealed class Mokt(
         }
     ) : Mokt(httpClient, json) {
         private fun HttpRequestBuilder.getHeader() = headers { bearerAuth(token = authToken) }
-        private fun HttpRequestBuilder.postHeader() = headers {
+        private fun HttpRequestBuilder.header() = headers {
             bearerAuth(token = authToken)
             contentType(ContentType.Application.Json)
         }
@@ -160,6 +160,26 @@ sealed class Mokt(
 
             response.requireSuccessful()
             return json.decodeFromString(response.bodyAsText())
+        }
+
+        suspend fun changeMinecraftName(nameToChange: String): ChangedName {
+            val response = httpClient.put {
+                header()
+                url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/minecraft/profile/name/$nameToChange")
+            }
+
+            response.requireSuccessful()
+            return json.decodeFromString(response.bodyAsText())
+        }
+
+        suspend fun changeSkin(changeSkinPayload: ChangeSkinPayload) {
+            val response = httpClient.post {
+                header()
+                url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/minecraft/profile/skins")
+                setBody(json.encodeToString(changeSkinPayload.variant.value.lowercase()))
+            }
+
+            response.requireSuccessful()
         }
     }
 }
