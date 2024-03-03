@@ -141,5 +141,15 @@ sealed class Mokt(
         }
 
         suspend fun isMinecraftOwnership(): Boolean = checkMinecraftOwnership().items?.isNotEmpty() ?: false
+
+        suspend fun getPlayerAttributes(): PlayerAttributes {
+            val response = httpClient.get {
+                getHeader()
+                url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/player/attributes")
+            }
+
+            response.requireSuccessful()
+            return json.decodeFromString(response.bodyAsText())
+        }
     }
 }
