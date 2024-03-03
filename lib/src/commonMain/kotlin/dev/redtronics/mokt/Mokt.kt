@@ -104,16 +104,26 @@ sealed class Mokt(
         httpClient: HttpClient,
         json: Json = Json {
             ignoreUnknownKeys = true
-        },
+        }
     ) : Mokt(httpClient, json)
 
     class Authenticated(
         private val authToken: String,
-        httpClient: HttpClient,
-        json: Json = Json {
+        private val httpClient: HttpClient,
+        private val json: Json = Json {
             ignoreUnknownKeys = true
-        },
+        }
     ) : Mokt(httpClient, json) {
+        private fun HttpRequestBuilder.authHeader() = headers { bearerAuth(token = authToken) }
 
+        suspend fun checkNameAvailability(username: String): AvailableUsername {
+            val response = httpClient.get {
+                authHeader()
+                url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/minecraft/profile/name/$username/available")
+            }
+
+            response.requireSuccessful()
+            return json.decodeFromString(response.bodyAsText())
+        }
     }
 }
