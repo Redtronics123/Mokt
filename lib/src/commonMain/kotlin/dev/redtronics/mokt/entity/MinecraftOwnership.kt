@@ -13,12 +13,19 @@
  * copies or substantial portions of the Software.
  */
 
-package dev.redtronics.mokt.auth.common.payload
+package dev.redtronics.mokt.entity
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MojangAuthPayload(
-    val identityToken: String,
-    val ensureLegacyEnabled: Boolean
+data class MinecraftOwnership(
+    val items: List<MinecraftOwnershipItems>? = null,
+    val signature: String,
+    val keyId: String
+)
+
+@Serializable
+data class MinecraftOwnershipItems(
+    val name: String,
+    val signature: String
 )

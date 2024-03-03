@@ -114,16 +114,32 @@ sealed class Mokt(
             ignoreUnknownKeys = true
         }
     ) : Mokt(httpClient, json) {
-        private fun HttpRequestBuilder.authHeader() = headers { bearerAuth(token = authToken) }
+        private fun HttpRequestBuilder.getHeader() = headers { bearerAuth(token = authToken) }
+        private fun HttpRequestBuilder.postHeader() = headers {
+            bearerAuth(token = authToken)
+            contentType(ContentType.Application.Json)
+        }
 
         suspend fun checkNameAvailability(username: String): AvailableUsername {
             val response = httpClient.get {
-                authHeader()
+                getHeader()
                 url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/minecraft/profile/name/$username/available")
             }
 
             response.requireSuccessful()
             return json.decodeFromString(response.bodyAsText())
         }
+
+        suspend fun checkMinecraftOwnership(): MinecraftOwnership {
+            val response = httpClient.get {
+                getHeader()
+                url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/entitlements/mcstore")
+            }
+
+            response.requireSuccessful()
+            return json.decodeFromString(response.bodyAsText())
+        }
+
+        suspend fun isMinecraftOwnership(): Boolean = checkMinecraftOwnership().items?.isNotEmpty() ?: false
     }
 }
