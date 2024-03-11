@@ -104,16 +104,82 @@ sealed class Mokt(
         httpClient: HttpClient,
         json: Json = Json {
             ignoreUnknownKeys = true
-        },
+        }
     ) : Mokt(httpClient, json)
 
     class Authenticated(
         private val authToken: String,
-        httpClient: HttpClient,
-        json: Json = Json {
+        private val httpClient: HttpClient,
+        private val json: Json = Json {
             ignoreUnknownKeys = true
-        },
+        }
     ) : Mokt(httpClient, json) {
+        private fun HttpRequestBuilder.getHeader() = headers { bearerAuth(token = authToken) }
+        private fun HttpRequestBuilder.header() = headers {
+            bearerAuth(token = authToken)
+            contentType(ContentType.Application.Json)
+        }
 
+        suspend fun checkNameAvailability(username: String): AvailableUsername {
+            val response = httpClient.get {
+                getHeader()
+                url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/minecraft/profile/name/$username/available")
+            }
+
+            response.requireSuccessful()
+            return json.decodeFromString(response.bodyAsText())
+        }
+
+        suspend fun checkMinecraftOwnership(): MinecraftOwnership {
+            val response = httpClient.get {
+                getHeader()
+                url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/entitlements/mcstore")
+            }
+
+            response.requireSuccessful()
+            return json.decodeFromString(response.bodyAsText())
+        }
+
+        suspend fun isMinecraftOwnership(): Boolean = checkMinecraftOwnership().items?.isNotEmpty() ?: false
+
+        suspend fun getPlayerAttributes(): PlayerAttributes {
+            val response = httpClient.get {
+                getHeader()
+                url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/player/attributes")
+            }
+
+            response.requireSuccessful()
+            return json.decodeFromString(response.bodyAsText())
+        }
+
+        suspend fun getPlayerBlocklist(): PlayerBlocklist {
+            val response = httpClient.get {
+                getHeader()
+                url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/privacy/blocklist")
+            }
+
+            response.requireSuccessful()
+            return json.decodeFromString(response.bodyAsText())
+        }
+
+        suspend fun changeMinecraftName(nameToChange: String): ChangedName {
+            val response = httpClient.put {
+                header()
+                url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/minecraft/profile/name/$nameToChange")
+            }
+
+            response.requireSuccessful()
+            return json.decodeFromString(response.bodyAsText())
+        }
+
+        suspend fun changeSkin(changeSkinPayload: ChangeSkinPayload) {
+            val response = httpClient.post {
+                header()
+                url(urlString = "${BuildConstants.MINECRAFT_SERVICE_URL}/minecraft/profile/skins")
+                setBody(json.encodeToString(changeSkinPayload.variant.value.lowercase()))
+            }
+
+            response.requireSuccessful()
+        }
     }
 }

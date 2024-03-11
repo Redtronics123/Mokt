@@ -2,9 +2,13 @@ include:
   - project: templates/gitlab-ci
     ref: "master"
     file: java-build-publish.yaml
+  - project: templates/gitlab-ci
+    ref: "master"
+    file: container-image.yaml
 
 variables:
   ENABLE_CHECK: "true"
+  SUB_IMAGE: "docs"
 
 test:
   artifacts:
@@ -13,3 +17,24 @@ test:
     reports:
       junit:
         - "**/build/test-results/test/TEST-*.xml"
+
+build-docs:
+  stage: build
+  only:
+    - tags
+  script:
+  - apt-get -y update && apt-get -y install git
+  - git config --global --add safe.directory "${CI_PROJECT_DIR}"
+  - gradle dokkaHtml
+  artifacts:
+    paths:
+      - "lib/build/dokka/html"
+
+container:
+  stage: publish
+  only:
+    - tags
+  needs:
+    - job: build-docs
+      artifacts: true
+  extends: .build_with_kaniko

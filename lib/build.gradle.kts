@@ -71,9 +71,16 @@ kotlin {
                 api(libs.ktor.server.core)
                 api(libs.ktor.server.cio)
                 api(libs.ktor.server.content.negotiation)
+                api(libs.ktor.server.html)
 
                 // Ktor Common
                 api(libs.ktor.seralization.json)
+
+                // UUID
+                implementation(libs.uuid)
+
+                // DateTime
+                implementation(libs.kotlinx.datetime)
             }
         }
         commonTest {
@@ -108,6 +115,14 @@ tasks {
         into(templateDest)
     }
 
+    dokkaHtml {
+        this.moduleName.set("Mokt")
+    }
+
+    withType<org.gradle.jvm.tasks.Jar> {
+        dependsOn("generateTemplates")
+    }
+
     withType<KotlinCompile<*>> {
         dependsOn("generateTemplates")
     }
@@ -127,25 +142,6 @@ tasks {
         }
     }
 }
-
-//
-//koverReport {
-//    filters {
-//        includes {
-//            packages("dev.redtronics.mokt")
-//        }
-//    }
-//    defaults {
-//        html {
-//            setReportDir(layout.buildDirectory.dir("kover-reports/html-result"))
-//            onCheck = true
-//        }
-//        xml {
-//            setReportFile(layout.buildDirectory.file("kover-reports/result.xml"))
-//            onCheck = true
-//        }
-//    }
-//}
 
 publishing {
     publications {
