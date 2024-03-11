@@ -170,13 +170,6 @@ sealed class MSAuth(
         }
     }
 
-    class DeviceAuth(
-        private val httpClient: HttpClient,
-        private val json: Json
-    ) : MSAuth(httpClient, json) {
-
-    }
-
     companion object {
         private fun generateUniqueIdentifier() = UUID.generateUUID().toString()
     }
