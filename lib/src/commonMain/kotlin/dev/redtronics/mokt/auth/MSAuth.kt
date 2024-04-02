@@ -123,7 +123,7 @@ sealed class MSAuth(
 
         private val redirectUrl = "http://localhost:$port$redirectPath"
 
-        suspend fun getMSToken(
+        suspend fun getMSAccessToken(
             openInBrowser: suspend (String) -> Unit,
             responsePage: HTML.() -> Unit = { defaultResponsePage() },
         ): MSTokenOauthResponse {
@@ -167,6 +167,22 @@ sealed class MSAuth(
 
             server.stop()
             return response
+        }
+
+        suspend fun getMSAccessTokenFromRefreshToken(refreshToken: String): MSTokenOauthResponse {
+            val accessTokenResponse = httpClient.submitForm(
+                url = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token",
+                formParameters = parameters {
+                    append(name = "client_id", value = clientId)
+                    append(name = "scope", value = "XBoxLive.signin offline_access email openid")
+                    append(name = "refresh_token", value = refreshToken)
+                    append(name = "grant_type", value = "refresh_token")
+                },
+                encodeInQuery = false
+            )
+            accessTokenResponse.requireSuccessful()
+
+            return json.decodeFromString(accessTokenResponse.bodyAsText())
         }
     }
 
