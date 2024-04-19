@@ -1,12 +1,12 @@
 [versions]
-kotlin = "1.9.22"
+kotlin = "1.9.23"
 ktor = "2.3.10"
-logback = "1.5.0"
+logback = "1.5.6"
 serialization = "1.6.3"
-kotest = "5.8.1"
-dokka = "1.9.10"
+kotest = "5.8.0"
+dokka = "1.9.20"
 kover = "0.7.6"
-uuid = "0.0.22"
+uuid = "0.0.25"
 datetime = "0.5.0"
 
 [libraries]
