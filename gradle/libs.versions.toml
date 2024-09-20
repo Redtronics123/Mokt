@@ -1,0 +1,11 @@
+[versions]
+kotlin = "2.0.20"
+
+[libraries]
+# actual plugins, but needed as dependencies in buildSrc
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+
+[bundles]
+build-src = [
+    "kotlin-gradle-plugin"
+]
