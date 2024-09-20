@@ -1,0 +1,3 @@
+plugins {
+    `mokt-publishing`
+}
