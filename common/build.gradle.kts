@@ -35,24 +35,44 @@ kotlin {
             dependencies {
                 api(libs.kotlinx.coroutines.core)
                 api(libs.kotlinx.coroutines.debug)
+
+                api(libs.ktor.serialization.json)
+                api(libs.ktor.client.core)
+                api(libs.ktor.client.logging)
+                api(libs.ktor.client.content.negotiation)
             }
         }
 
         jvmMain {
             dependencies {
                 api(libs.kotlinx.coroutines.reactive)
+                api(libs.ktor.client.cio)
             }
         }
 
         jsMain {
             dependencies {
                 api(libs.kotlinx.coroutines.core.js)
+                api(libs.ktor.client.js)
+            }
+        }
+
+        linuxMain {
+            dependencies {
+                api(libs.ktor.client.cio)
+            }
+        }
+
+        mingwMain {
+            dependencies {
+                api(libs.ktor.client.winhttp)
             }
         }
 
         androidMain {
             dependencies {
                 api(libs.kotlinx.coroutines.android)
+                api(libs.ktor.client.android)
             }
         }
 
