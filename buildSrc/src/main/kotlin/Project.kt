@@ -9,6 +9,12 @@
  * and/or sell copies of the Software.
  */
 
+/**
+ * Project settings for Mokt.
+ *
+ * @since 0.0.1
+ * @author Nils Jäkel
+ * */
 object Project {
     const val NAME = "Mokt"
     const val DESCRIPTION = "A Kotlin Multiplatform SDK for interaction with the Minecraft World."

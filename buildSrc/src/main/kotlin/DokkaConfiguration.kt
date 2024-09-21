@@ -11,6 +11,15 @@
 
 import org.gradle.api.provider.Property
 
+/**
+ * Contains the configuration for the Dokka plugin.
+ *
+ * @property name The name override for the documentation.
+ * @property description The description for the documentation.
+ *
+ * @since 0.0.1
+ * @author Nils Jäkel
+ */
 interface DokkaConfiguration {
     val name: Property<String>
     val description: Property<String>

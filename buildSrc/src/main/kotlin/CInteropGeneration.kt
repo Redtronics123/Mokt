@@ -13,8 +13,20 @@ import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
 import java.nio.file.Path
 
+/**
+ * The architectures for which cinterop def files should be generated.
+ *
+ * @since 0.0.1
+ * @author Nils Jäkel
+ */
 private val architectures = listOf("aarch64-unknown-linux-gnu", "x86_64-pc-windows-gnu")
 
+/**
+ * Compiles the C++ bindings for the cinterop.
+ *
+ * @since 0.0.1
+ * @author Nils Jäkel
+ */
 internal fun Project.compileCppBindings() {
     val workDir = file("../mokt-cpp-bindings")
 
@@ -28,15 +40,21 @@ internal fun Project.compileCppBindings() {
     }
 }
 
+/**
+ * Generates cinterop def files for all supported operating system platforms.
+ *
+ * @since 0.0.1
+ * @author Nils Jäkel
+ */
 internal fun Project.generateCInteropDefFiles() {
     val cppBindingsDir = file("../mokt-cpp-bindings")
     val includeDir = cppBindingsDir.resolve("include")
-    val nativeCInterOpDir = file("../native-cinterop")
+    val nativeCInteropDir = file("../native-cinterop")
 
     val hFiles = includeDir.list()?.joinToString(" ") ?: error("Could not find any files in $includeDir")
 
     architectures.forEach { arch ->
-        val defFile = nativeCInterOpDir.resolve("$arch.def")
+        val defFile = nativeCInteropDir.resolve("$arch.def")
         if (!defFile.exists()) {
             defFile.createNewFile()
         }
@@ -50,6 +68,12 @@ internal fun Project.generateCInteropDefFiles() {
     }
 }
 
+/**
+ * Applies the cinterop generation for the given [architectures] to the given [KotlinNativeTargetWithHostTests].
+ *
+ * @since 0.0.1
+ * @author Nils Jäkel
+ */
 fun KotlinNativeTargetWithHostTests.applyCInteropGeneration(path: Path) {
     compilations.getByName("main") {
         cinterops {
