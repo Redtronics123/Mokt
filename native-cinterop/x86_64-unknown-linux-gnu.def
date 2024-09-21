@@ -1,4 +1,0 @@
-headers = mokt.h
-staticLibraries = libmokt_cpp_bindings.a
-compilerOpts = -I/home/nils/Development/Redtronics/Mokt/mokt-cpp-bindings/include
-libraryPaths = /home/nils/Development/Redtronics/Mokt/mokt-cpp-bindings
