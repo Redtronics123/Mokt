@@ -14,4 +14,4 @@ plugins {
 }
 rootProject.name = "Mokt"
 
-include("common", "core", "authentication")
+include("common", "core", "authentication", "example")
