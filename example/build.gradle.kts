@@ -10,4 +10,6 @@ repositories {
 
 dependencies {
     implementation(project(":authentication"))
+
+    implementation(libs.kotlinx.coroutines.core)
 }
