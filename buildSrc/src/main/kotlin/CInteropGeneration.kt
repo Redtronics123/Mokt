@@ -16,8 +16,14 @@ import java.nio.file.Path
 private val architectures = listOf("aarch64-unknown-linux-gnu", "x86_64-pc-windows-gnu")
 
 internal fun Project.compileCppBindings() {
+    val workDir = file("../mokt-cpp-bindings")
+
     exec {
-        workingDir = file("../mokt-cpp-bindings")
+        workingDir = workDir
+        commandLine = listOf("cmake", ".")
+    }
+    exec {
+        workingDir = workDir
         commandLine = listOf("cmake", "--build", ".", "--config", "Release")
     }
 }
