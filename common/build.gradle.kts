@@ -43,10 +43,24 @@ kotlin {
             }
         }
 
+        commonTest {
+            dependencies {
+                implementation(libs.kotest.assertions.core)
+                implementation(libs.kotest.framework.engine)
+                implementation(libs.kotest.property)
+            }
+        }
+
         jvmMain {
             dependencies {
                 api(libs.kotlinx.coroutines.reactive)
                 api(libs.ktor.client.cio)
+            }
+        }
+
+        jvmTest {
+            dependencies {
+                implementation(libs.kotest.runner.junit5)
             }
         }
 
