@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     org.jetbrains.kotlin.multiplatform
+    io.kotest.multiplatform
     org.jetbrains.dokka
 }
 
@@ -38,19 +39,6 @@ kotlin {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions.jvmTarget = jvmTargetVersion
     }
-
-//    linuxX64 {
-//        compilations {
-//            getByName("main") {
-//                cinterops {
-//                    create("moktCppBindings") {
-//                        defFile(Path("/home/nils/Development/Redtronics/Mokt/native-cinterop/aarch64-unknown-linux-gnu.def"))
-//                        packageName("moktcpp")
-//                    }
-//                }
-//            }
-//        }
-//    }
 }
 
 tasks {
