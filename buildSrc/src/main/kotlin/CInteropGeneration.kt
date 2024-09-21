@@ -10,8 +10,10 @@
  */
 
 import org.gradle.api.Project
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
+import java.nio.file.Path
 
-private val architectures = listOf("x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu", "x86_64-pc-windows-gnu")
+private val architectures = listOf("aarch64-unknown-linux-gnu", "x86_64-pc-windows-gnu")
 
 internal fun Project.compileCppBindings() {
     exec {
@@ -39,5 +41,16 @@ internal fun Project.generateCInteropDefFiles() {
             compilerOpts = -I$includeDir
             libraryPaths = $cppBindingsDir
         """.trimIndent())
+    }
+}
+
+fun KotlinNativeTargetWithHostTests.applyCInteropGeneration(path: Path) {
+    compilations.getByName("main") {
+        cinterops {
+            create("moktCppBindings") {
+                defFile(path)
+                packageName("moktcpp")
+            }
+        }
     }
 }
