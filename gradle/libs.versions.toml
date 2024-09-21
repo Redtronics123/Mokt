@@ -2,16 +2,27 @@
 kotlin = "2.0.20"
 idea-ext = "1.1.8"
 dokka = "1.9.20"
+android = "8.5.2"
+coroutines = "1.9.0"
 
 [libraries]
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "coroutines" }
+kotlinx-coroutines-core-js = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-js", version.ref = "coroutines" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlinx-coroutines-reactive = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactive", version.ref = "coroutines" }
+
 # actual plugins, but needed as dependencies in buildSrc
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 idea-ext-gradle-plugin = { module = "gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext", version.ref = "idea-ext" }
 dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 
+android-library-gradle-plugin = { module = "com.android.library:com.android.library.gradle.plugin", version.ref = "android" }
+
 [bundles]
 build-src = [
     "kotlin-gradle-plugin",
     "idea-ext-gradle-plugin",
-    "dokka-gradle-plugin"
+    "dokka-gradle-plugin",
+    "android-library-gradle-plugin"
 ]
