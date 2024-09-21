@@ -4,6 +4,12 @@ plugins {
     `mokt-publishing`
     `mokt-multiplatform`
     `mokt-cinterop-generation`
+    `mokt-android`
+}
+
+repositories {
+    mavenCentral()
+    google()
 }
 
 group = Project.GROUP
@@ -25,6 +31,31 @@ kotlin {
     }
 
     sourceSets {
+        commonMain {
+            dependencies {
+                api(libs.kotlinx.coroutines.core)
+                api(libs.kotlinx.coroutines.debug)
+            }
+        }
+
+        jvmMain {
+            dependencies {
+                api(libs.kotlinx.coroutines.reactive)
+            }
+        }
+
+        jsMain {
+            dependencies {
+                api(libs.kotlinx.coroutines.core.js)
+            }
+        }
+
+        androidMain {
+            dependencies {
+                api(libs.kotlinx.coroutines.android)
+            }
+        }
+
         all {
             languageSettings {
                optIn("kotlinx.cinterop.UnsafeNumber")
@@ -35,4 +66,8 @@ kotlin {
             }
         }
     }
+}
+
+android {
+    namespace = group.toString()
 }
