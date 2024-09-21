@@ -129,29 +129,29 @@ mokt_cpp_bindings/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mokt_cpp_bindings.dir/build.make CMakeFiles/mokt_cpp_bindings.dir/build
 .PHONY : mokt_cpp_bindings/fast
 
-mokt.o: mokt.cpp.o
-.PHONY : mokt.o
+src/mokt.o: src/mokt.cpp.o
+.PHONY : src/mokt.o
 
 # target to build an object file
-mokt.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mokt_cpp_bindings.dir/build.make CMakeFiles/mokt_cpp_bindings.dir/mokt.cpp.o
-.PHONY : mokt.cpp.o
+src/mokt.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mokt_cpp_bindings.dir/build.make CMakeFiles/mokt_cpp_bindings.dir/src/mokt.cpp.o
+.PHONY : src/mokt.cpp.o
 
-mokt.i: mokt.cpp.i
-.PHONY : mokt.i
+src/mokt.i: src/mokt.cpp.i
+.PHONY : src/mokt.i
 
 # target to preprocess a source file
-mokt.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mokt_cpp_bindings.dir/build.make CMakeFiles/mokt_cpp_bindings.dir/mokt.cpp.i
-.PHONY : mokt.cpp.i
+src/mokt.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mokt_cpp_bindings.dir/build.make CMakeFiles/mokt_cpp_bindings.dir/src/mokt.cpp.i
+.PHONY : src/mokt.cpp.i
 
-mokt.s: mokt.cpp.s
-.PHONY : mokt.s
+src/mokt.s: src/mokt.cpp.s
+.PHONY : src/mokt.s
 
 # target to generate assembly for a file
-mokt.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mokt_cpp_bindings.dir/build.make CMakeFiles/mokt_cpp_bindings.dir/mokt.cpp.s
-.PHONY : mokt.cpp.s
+src/mokt.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mokt_cpp_bindings.dir/build.make CMakeFiles/mokt_cpp_bindings.dir/src/mokt.cpp.s
+.PHONY : src/mokt.cpp.s
 
 # Help Target
 help:
@@ -162,9 +162,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... mokt_cpp_bindings"
-	@echo "... mokt.o"
-	@echo "... mokt.i"
-	@echo "... mokt.s"
+	@echo "... src/mokt.o"
+	@echo "... src/mokt.i"
+	@echo "... src/mokt.s"
 .PHONY : help
 
 
