@@ -22,7 +22,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(project(":common"))
+                api(project(":common"))
 
                 implementation(libs.ktor.server.core)
                 implementation(libs.ktor.server.cio)
