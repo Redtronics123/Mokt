@@ -4,8 +4,6 @@
 
 using namespace std;
 
-namespace mokt {
-    void hello() {
-        cout << "Hello, World!" << endl;
-    }
+void hello() {
+    cout << "Hello, World!" << endl;
 }
