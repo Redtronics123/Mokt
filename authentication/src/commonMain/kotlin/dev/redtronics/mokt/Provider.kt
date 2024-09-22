@@ -16,46 +16,9 @@ package dev.redtronics.mokt
  *
  * @property name The name of the provider.
  *
- * @see Microsoft
- * @see Authentik
- * @see Keycloak
- *
  * @since 0.0.1
  * @author Nils Jäkel
  */
-public sealed class Provider {
-    public abstract val name: String
-}
-
-/**
- * The Microsoft authentication provider.
- *
- * @since 0.0.1
- * @author Nils Jäkel
- */
-public class Microsoft : Provider() {
-    override val name: String
-        get() = "Microsoft"
-}
-
-/**
- * The Authentik authentication provider.
- *
- * @since 0.0.1
- * @author Nils Jäkel
- */
-public class Authentik : Provider() {
-    override val name: String
-        get() = "Authentik"
-}
-
-/**
- * The Keycloak authentication provider.
- *
- * @since 0.0.1
- * @author Nils Jäkel
- */
-public class Keycloak : Provider() {
-    override val name: String
-        get() = "Keycloak"
+public interface Provider {
+    public val name: String
 }
