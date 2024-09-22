@@ -9,6 +9,8 @@
  * and/or sell copies of the Software.
  */
 
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package dev.redtronics.mokt.provider
 
 import dev.redtronics.mokt.Provider
@@ -21,14 +23,15 @@ public class Microsoft : Provider {
 
     public var clientId: String? = null
 
-    public var authMethod: MSAuthMethod = MSAuthMethod.OAUTH2
+    public var authMethod: MSAuthMethod? = null
+        private set
 
     public suspend fun oauth2(builder: suspend MSOAuthBuilder.() -> Unit) {
-
+        authMethod = MSAuthMethod.OAUTH2
     }
 
     public suspend fun device(builder: suspend MSDeviceAuthBuilder.() -> Unit) {
-
+        authMethod = MSAuthMethod.DEVICE_AUTH
     }
 }
 
