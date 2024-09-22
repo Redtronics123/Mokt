@@ -15,18 +15,11 @@ import dev.redtronics.mokt.Provider
 import dev.redtronics.mokt.provider.builder.MSDeviceAuthBuilder
 import dev.redtronics.mokt.provider.builder.MSOAuthBuilder
 
-public enum class MSAuthMethod(public val authMethodName: String) {
-    OAUTH2("oauth2"),
-    DEVICE_AUTH("device_auth");
-
-    public companion object {
-        public fun byName(name: String): MSAuthMethod = entries.first { it.authMethodName == name }
-    }
-}
-
 public class Microsoft : Provider {
     override val name: String
         get() = "Microsoft"
+
+    public var clientId: String? = null
 
     public var authMethod: MSAuthMethod = MSAuthMethod.OAUTH2
 
@@ -36,5 +29,14 @@ public class Microsoft : Provider {
 
     public suspend fun device(builder: suspend MSDeviceAuthBuilder.() -> Unit) {
 
+    }
+}
+
+public enum class MSAuthMethod(public val authMethodName: String) {
+    OAUTH2("oauth2"),
+    DEVICE_AUTH("device_auth");
+
+    public companion object {
+        public fun byName(name: String): MSAuthMethod = entries.first { it.authMethodName == name }
     }
 }
