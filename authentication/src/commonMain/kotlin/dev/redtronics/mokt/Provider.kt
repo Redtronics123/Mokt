@@ -12,29 +12,50 @@
 package dev.redtronics.mokt
 
 /**
- * Represents an authentication provider which is used for authentication flow.
+ * Central adapter for the authentication providers.
  *
- * @property providerName The name of the provider.
+ * @property name The name of the provider.
  *
- * @author Nils Jäkel
+ * @see Microsoft
+ * @see Authentik
+ * @see Keycloak
+ *
  * @since 0.0.1
+ * @author Nils Jäkel
  */
-public enum class Provider(public val providerName: String) {
-    AUTHENTIK("authentik"),
-    KEYCLOAK("keycloak"),
-    STANDARD("standard");
+public sealed class Provider {
+    public abstract val name: String
+}
 
-    public companion object {
-        /**
-         * Finds a [Provider] by its [providerName].
-         *
-         * @param providerName The provider name to search for.
-         * @return The [Provider] with the specified [providerName].
-         * @throws NoSuchElementException If no [Provider] with the specified [providerName] is found.
-         *
-         * @since 0.0.1
-         * @author Nils Jäkel
-         */
-        public fun byName(providerName: String): Provider = entries.first { it.providerName == providerName }
-    }
+/**
+ * The Microsoft authentication provider.
+ *
+ * @since 0.0.1
+ * @author Nils Jäkel
+ */
+public class Microsoft : Provider() {
+    override val name: String
+        get() = "Microsoft"
+}
+
+/**
+ * The Authentik authentication provider.
+ *
+ * @since 0.0.1
+ * @author Nils Jäkel
+ */
+public class Authentik : Provider() {
+    override val name: String
+        get() = "Authentik"
+}
+
+/**
+ * The Keycloak authentication provider.
+ *
+ * @since 0.0.1
+ * @author Nils Jäkel
+ */
+public class Keycloak : Provider() {
+    override val name: String
+        get() = "Keycloak"
 }
