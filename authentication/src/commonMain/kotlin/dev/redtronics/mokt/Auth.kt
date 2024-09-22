@@ -42,7 +42,13 @@ public class AuthProvider<in T : Provider> @PublishedApi internal constructor(pr
  * @author Nils Jäkel
  */
 public suspend inline fun <reified T : Provider> auth(noinline builder: suspend T.() -> Unit): AuthProvider<T> = when (T::class) {
-    Microsoft::class -> AuthProvider(Microsoft().apply { builder(this as T) })
+    Microsoft::class -> {
+        val microsoft = Microsoft().apply { builder(this as T) }
+        if (microsoft.clientId == null) throw IllegalArgumentException("Client id is not set")
+
+        require(Regex("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}").matches(microsoft.clientId!!)) { "Client id is not valid" }
+        AuthProvider(microsoft)
+    }
     Authentik::class -> AuthProvider(Authentik().apply { builder(this as T) })
     Keycloak::class -> AuthProvider(Keycloak().apply { builder(this as T) })
     else -> { throw IllegalArgumentException("Provider ${T::class} is not supported") }
