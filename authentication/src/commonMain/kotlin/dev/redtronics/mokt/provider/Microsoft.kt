@@ -25,20 +25,49 @@ public class Microsoft : Provider {
     public var authMethod: MSAuthMethod? = null
         private set
 
-    public suspend fun oauth2(builder: suspend MSOAuthBuilder.() -> Unit) {
+    public suspend fun <T> oauth2(builder: suspend MSOAuthBuilder.() -> T): T {
         authMethod = MSAuthMethod.OAUTH2
+        MSOAuthBuilder().apply { return builder() }
     }
 
-    public suspend fun device(builder: suspend MSDeviceAuthBuilder.() -> Unit) {
+    public suspend fun <T> device(builder: suspend MSDeviceAuthBuilder.() -> T): T {
         authMethod = MSAuthMethod.DEVICE_AUTH
+        MSDeviceAuthBuilder().apply { return builder() }
     }
 }
 
+
+/**
+ * Defines the different authentication methods used by the Microsoft provider.
+ *
+ * @property authMethodName The name of the authentication method.
+ *
+ * @since 0.0.1
+ * @author Nils Jäkel
+ */
 public enum class MSAuthMethod(public val authMethodName: String) {
+    /**
+     * The OAuth 2.0 authentication method.
+     * */
     OAUTH2("oauth2"),
+
+    /**
+     * The device authentication method.
+     * */
     DEVICE_AUTH("device_auth");
 
     public companion object {
+        /**
+         * Finds an [MSAuthMethod] by its name.
+         *
+         * @param name The name of the authentication method.
+         * @return The [MSAuthMethod] with the given name.
+         *
+         * @throws NoSuchElementException If no authentication method is found with the given name.
+         *
+         * @since 0.0.1
+         * @author Nils Jäkel
+         */
         public fun byName(name: String): MSAuthMethod = entries.first { it.authMethodName == name }
     }
 }
