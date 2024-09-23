@@ -11,8 +11,6 @@
 
 package dev.redtronics.mokt.provider
 
-import dev.redtronics.mokt.Provider
-
 public class Keycloak : Provider {
     override val name: String
         get() = "Keycloak"

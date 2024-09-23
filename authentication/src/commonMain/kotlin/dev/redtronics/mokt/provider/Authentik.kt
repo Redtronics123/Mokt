@@ -11,8 +11,6 @@
 
 package dev.redtronics.mokt.provider
 
-import dev.redtronics.mokt.Provider
-
 public class Authentik : Provider {
     override val name: String
         get() = "Authentik"

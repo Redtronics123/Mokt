@@ -9,7 +9,7 @@
  * and/or sell copies of the Software.
  */
 
-package dev.redtronics.mokt
+package dev.redtronics.mokt.provider
 
 /**
  * Central adapter for the authentication providers.

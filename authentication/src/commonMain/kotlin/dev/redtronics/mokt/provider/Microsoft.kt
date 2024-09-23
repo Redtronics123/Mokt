@@ -13,7 +13,6 @@
 
 package dev.redtronics.mokt.provider
 
-import dev.redtronics.mokt.Provider
 import dev.redtronics.mokt.provider.builder.MSDeviceAuthBuilder
 import dev.redtronics.mokt.provider.builder.MSOAuthBuilder
 

@@ -14,6 +14,7 @@ package dev.redtronics.mokt
 import dev.redtronics.mokt.provider.Authentik
 import dev.redtronics.mokt.provider.Keycloak
 import dev.redtronics.mokt.provider.Microsoft
+import dev.redtronics.mokt.provider.Provider
 import kotlin.reflect.KProperty
 
 /**
