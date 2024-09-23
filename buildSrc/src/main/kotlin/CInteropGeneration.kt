@@ -9,7 +9,7 @@
  * and/or sell copies of the Software.
  */
 
-import org.gradle.api.Project
+import org.gradle.api.Project as GradleProject
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
 import java.nio.file.Path
 
@@ -27,7 +27,7 @@ private val architectures = listOf("aarch64-unknown-linux-gnu", "x86_64-pc-windo
  * @since 0.0.1
  * @author Nils Jäkel
  */
-internal fun Project.compileCppBindings() {
+internal fun GradleProject.compileCppBindings() {
     val workDir = file("../mokt-cpp-bindings")
 
     exec {
@@ -46,7 +46,7 @@ internal fun Project.compileCppBindings() {
  * @since 0.0.1
  * @author Nils Jäkel
  */
-internal fun Project.generateCInteropDefFiles() {
+internal fun GradleProject.generateCInteropDefFiles() {
     val cppBindingsDir = file("../mokt-cpp-bindings")
     val includeDir = cppBindingsDir.resolve("include")
     val nativeCInteropDir = file("../native-cinterop")
@@ -79,7 +79,7 @@ fun KotlinNativeTargetWithHostTests.applyCInteropGeneration(path: Path) {
         cinterops {
             create("moktCppBindings") {
                 defFile(path)
-                packageName("moktcpp")
+                packageName("${Project.GROUP}.cpp")
             }
         }
     }
