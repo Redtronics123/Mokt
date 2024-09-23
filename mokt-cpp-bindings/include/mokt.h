@@ -14,4 +14,6 @@
 
 void hello();
 
+const char *get_env(char key[]);
+
 #endif //MOKT_H

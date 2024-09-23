@@ -1,5 +1,5 @@
 /*
-* MIT License
+ * MIT License
  * Copyright 2024 Nils Jäkel
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -17,4 +17,10 @@ using namespace std;
 
 void hello() {
     cout << "Hello, World!" << endl;
+}
+
+const char *get_env(char key[]) {
+    const char *value = getenv(key);
+    const char* env_var(value ? value : "");
+    return env_var;
 }
