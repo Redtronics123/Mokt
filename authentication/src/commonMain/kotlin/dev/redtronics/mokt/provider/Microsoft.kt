@@ -13,14 +13,26 @@
 
 package dev.redtronics.mokt.provider
 
+import dev.redtronics.mokt.getEnv
 import dev.redtronics.mokt.provider.builder.MSDeviceAuthBuilder
 import dev.redtronics.mokt.provider.builder.MSOAuthBuilder
+import io.ktor.http.*
 
-public class Microsoft : Provider {
+public class Microsoft(
+    override var url: Url
+) : Provider {
     override val name: String
         get() = "Microsoft"
 
-    public var clientId: String? = null
+    override val host: String
+        get() = url.host
+
+    override val port: Int
+        get() = url.port
+
+    public var useHttpsByRedirect: Boolean = false
+
+    public var clientId: String? = getEnv("MS_CLIENT_ID")
 
     public var authMethod: MSAuthMethod? = null
         private set
