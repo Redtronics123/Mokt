@@ -11,6 +11,8 @@
 
 package dev.redtronics.mokt.provider
 
+import io.ktor.http.*
+
 /**
  * Central adapter for the authentication providers.
  *
@@ -21,4 +23,7 @@ package dev.redtronics.mokt.provider
  */
 public interface Provider {
     public val name: String
+    public val url: Url
+    public val host: String
+    public val port: Int
 }
