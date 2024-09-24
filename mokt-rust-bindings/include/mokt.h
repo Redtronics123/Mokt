@@ -3,4 +3,4 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-void test(void);
+const char *get_env(const char *key);
