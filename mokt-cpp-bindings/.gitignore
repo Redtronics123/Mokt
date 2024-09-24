@@ -1,8 +1,0 @@
-### Cpp ###
-cmake-build-debug
-CMakeCache.txt
-cmake_install.cmake
-*.a
-
-CMakeFiles/
-build/
