@@ -11,7 +11,18 @@
 
 package dev.redtronics.mokt.provider
 
+import io.ktor.http.*
+
 public class Keycloak : Provider {
     override val name: String
         get() = "Keycloak"
+
+    override val url: Url
+        get() = TODO("Not yet implemented")
+
+    override val host: String
+        get() = TODO("Not yet implemented")
+
+    override val port: Int
+        get() = TODO("Not yet implemented")
 }
