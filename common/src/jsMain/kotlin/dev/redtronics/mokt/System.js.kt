@@ -9,7 +9,7 @@
  * and/or sell copies of the Software.
  */
 
-package dev.redtronics.mokt.os
+package dev.redtronics.mokt
 
 public actual fun getEnv(key: String): String? {
     val value = js("process.env[key]") as? String ?: return null

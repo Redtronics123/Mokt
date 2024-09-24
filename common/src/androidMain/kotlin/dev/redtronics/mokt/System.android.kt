@@ -1,3 +1,3 @@
-package dev.redtronics.mokt.os
+package dev.redtronics.mokt
 
 public actual fun getEnv(key: String): String? = System.getenv(key)
