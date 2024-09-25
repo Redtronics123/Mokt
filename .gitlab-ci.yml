@@ -19,8 +19,8 @@ kotlin_build:
   stage: kotlin_build
   before_script:
     - apt-get install curl -y && curl https://sh.rustup.rs -sSf | sh -s -- -y
-    - exec bash
   script:
+    - exec bash
     - gradle clean build dokkaHtmlMultiModule -x check -x allTests -x test
   artifacts:
     expire_in: 10 days
