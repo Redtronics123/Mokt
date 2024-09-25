@@ -10,13 +10,14 @@ stages:
 variables:
   WRITERSIDE_BUILDER_VERSION: "242.21870"
   UBUNTU_IMAGE: "ubuntu:latest"
+  JAVA_VERSION: "openjdk-21-jdk-headless"
 
 kotlin_build:
   image: ${UBUNTU_IMAGE}
   stage: kotlin_build
   before_script:
     - apt-get update -y  && apt upgrade -y
-    - apt install curl gcc -y
+    - apt install curl gcc ${JAVA_VERSION} -y
     - curl https://sh.rustup.rs -sSf | sh -s -- -y
     - source ~/.bashrc
   script:
