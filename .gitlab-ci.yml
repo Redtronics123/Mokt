@@ -9,7 +9,7 @@ stages:
 
 variables:
   WRITERSIDE_BUILDER_VERSION: "242.21870"
-  GRADLE_IMAGE: "gradle:8.9-jdk8"
+  GRADLE_IMAGE: "gradle:8.9-jdk21"
 
 before_script:
   - apt-get update && apt upgrade
