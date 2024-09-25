@@ -11,13 +11,11 @@ variables:
   WRITERSIDE_BUILDER_VERSION: "242.21870"
   GRADLE_IMAGE: "gradle:8.9-jdk21"
 
-before_script:
-  - apt-get update && apt upgrade
-
 kotlin_build:
   image: ${GRADLE_IMAGE}
   stage: kotlin_build
   before_script:
+    - apt-get update && apt upgrade
     - apt install curl gcc -y
     - curl https://sh.rustup.rs -sSf | sh -s -- -y
     - source ~/.bashrc
