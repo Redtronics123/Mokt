@@ -1,0 +1,27 @@
+stages:
+  - kotlin_build
+  - kotlin_test
+  - dokka_publish
+  - docs_build
+  - docs_test
+  - docs_publish
+  - kotlin_publish
+
+variables:
+  WRITERSIDE_BUILDER_VERSION: "242.21870"
+  GRADLE_IMAGE: "gradle:8.9-jdk8"
+
+before_script:
+  - apt-get update && apt upgrade
+
+kotlin_build:
+  image: ${GRADLE_IMAGE}
+  stage: kotlin_build
+  before_script:
+    - apt-get install curl && curl https://sh.rustup.rs -sSf | sh
+  script:
+    - gradle clean build dokkaHtmlMultiModule -x check -x allTests -x test
+  artifacts:
+    expire_in: 10 days
+    paths:
+      - build/dokka/htmlMultiModule
