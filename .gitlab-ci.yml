@@ -18,8 +18,9 @@ kotlin_build:
   image: ${GRADLE_IMAGE}
   stage: kotlin_build
   before_script:
-    - apt-get install curl -y && curl https://sh.rustup.rs -sSf | sh -s -- -y
-    - bash
+    - apt install curl build-essential -y
+    - curl https://sh.rustup.rs -sSf | sh -s -- -y
+    - source ~/.bashrc
   script:
     - gradle clean build dokkaHtmlMultiModule -x check -x allTests -x test
   artifacts:
