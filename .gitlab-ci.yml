@@ -18,7 +18,7 @@ kotlin_build:
   image: ${GRADLE_IMAGE}
   stage: kotlin_build
   before_script:
-    - apt install curl build-essential -y
+    - apt install curl gcc -y
     - curl https://sh.rustup.rs -sSf | sh -s -- -y
     - source ~/.bashrc
   script:
