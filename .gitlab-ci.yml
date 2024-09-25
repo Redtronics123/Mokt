@@ -20,6 +20,7 @@ kotlin_build:
     - apt install curl gcc ${JAVA_VERSION} -y
     - curl https://sh.rustup.rs -sSf | sh -s -- -y
     - source ~/.bashrc
+    - cargo --help
   script:
     - ./gradlew clean build dokkaHtmlMultiModule -x check -x allTests -x test
   artifacts:
