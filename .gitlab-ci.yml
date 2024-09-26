@@ -9,18 +9,15 @@ stages:
 
 variables:
   WRITERSIDE_BUILDER_VERSION: "242.21870"
-  UBUNTU_IMAGE: "ubuntu:latest"
+  GRADLE_IMAGE: "gradle:8.9-jdk21"
   JAVA_VERSION: "openjdk-21-jdk-headless"
 
 kotlin_build:
-  image: ${UBUNTU_IMAGE}
+  image: ${GRADLE_IMAGE}
   stage: kotlin_build
   before_script:
     - apt-get update -y  && apt upgrade -y
-    - apt install curl gcc ${JAVA_VERSION} -y
-    - curl https://sh.rustup.rs -sSf | sh -s -- -y
-    - source ~/.bashrc
-    - cargo --help
+    - apt install curl gcc cargo -y
   script:
     - ./gradlew clean build dokkaHtmlMultiModule -x check -x allTests -x test
   artifacts:
