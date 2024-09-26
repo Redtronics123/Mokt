@@ -72,3 +72,12 @@ dependencies {
     Not available at the moment
 }
 ```
+
+## Changelog
+For updates and new features please see the [CHANGELOG](CHANGELOG.md).
+
+## License
+Mokt is licensed under the MIT License. See the [LICENSE](LICENSE) for more information.
+
+## Contributing
+You want to contribute? Please see in the [contributing guidelines](CONTRIBUTING.md) to get started.
