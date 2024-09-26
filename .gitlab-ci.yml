@@ -10,16 +10,20 @@ stages:
 variables:
   WRITERSIDE_BUILDER_VERSION: "242.21870"
   GRADLE_IMAGE: "gradle:8.9-jdk21"
-  JAVA_VERSION: "openjdk-21-jdk-headless"
+  SDK_MANAGER_VERSION: "google-android-cmdline-tools-9.0-installer"
+  ANDROID_COMPILE_SDK: "34"
 
 kotlin_build:
   image: ${GRADLE_IMAGE}
   stage: kotlin_build
   before_script:
-    - apt-get update -y  && apt upgrade -y
+    - apt update -y && apt upgrade -y
     - apt install curl gcc cargo -y
+    - echo 1 | apt install google-android-cmdline-tools-9.0-installer -y
+    - yes | sdkmanager --licenses
+    - export ANDROID_HOME=/usr/lib/android-sdk
   script:
-    - ./gradlew clean build dokkaHtmlMultiModule -x check -x allTests -x test
+    - gradle clean build dokkaHtmlMultiModule -x check -x allTests -x test
   artifacts:
     expire_in: 10 days
     paths:
