@@ -58,7 +58,7 @@ docs_test:
   needs:
     - docs_build
   before_script:
-    - apt update -y && apt upgrade
+    - apt update -y && apt upgrade -y
     - apt install curl -y
   script:
     - cd public
