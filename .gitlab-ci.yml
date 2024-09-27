@@ -6,7 +6,6 @@ stages:
   - docs_test
   - docs_publish
   - kotlin_publish
-  - build
 
 variables:
   WRITERSIDE_BUILDER_VERSION: "242.21870"
@@ -53,5 +52,15 @@ kotlin_test:
       junit:
         - build/test-results/test/TEST-*.xml
 
-#docs_test:
-#  stage: docs_test
+docs_test:
+  stage: test
+  image: ubuntu:latest
+  needs:
+    - docs_build
+  before_script:
+    - apt update -y && apt upgrade
+    - apt install curl -y
+  script:
+    - cd public
+    - curl -o wrs-checker.jar -L https://packages.jetbrains.team/maven/p/writerside/maven/com/jetbrains/writerside/writerside-ci-checker/1.0/writerside-ci-checker-1.0.jar
+    - java -jar wrs-checker.jar report.json $INSTANCE
