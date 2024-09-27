@@ -9,21 +9,15 @@ stages:
 
 variables:
   WRITERSIDE_BUILDER_VERSION: "242.21870"
-  UBUNTU_IMAGE: "ubuntu:latest"
-  JAVA_VERSION: "openjdk-21-jdk"
-  SDK_MANAGER_VERSION: "google-android-cmdline-tools-9.0-installer"
-  ANDROID_COMPILE_SDK: "34"
+  ANDROID_IMAGE: "ghcr.io/cirruslabs/android-sdk:34"
 
 kotlin_build:
-  image: ${UBUNTU_IMAGE}
+  image: ${ANDROID_IMAGE}
   stage: kotlin_build
   before_script:
     - apt update -y && apt upgrade -y
-    - apt install curl gcc cargo ${JAVA_VERSION} -y
-    - echo 1 | apt install google-android-cmdline-tools-9.0-installer -y
-    - yes | sdkmanager --licenses > /dev/null
+    - apt install curl gcc cargo -y
   script:
-    - export ANDROID_HOME=/usr/lib/android-sdk
     - ./gradlew clean build dokkaHtmlMultiModule -x check -x allTests -x test
   artifacts:
     expire_in: 10 days
