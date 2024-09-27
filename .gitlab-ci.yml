@@ -21,7 +21,7 @@ kotlin_build:
     - apt update -y && apt upgrade -y
     - apt install curl gcc cargo ${JAVA_VERSION} -y
     - echo 1 | apt install google-android-cmdline-tools-9.0-installer -y
-    - yes | sdkmanager --licenses
+    - yes | sdkmanager --licenses > /dev/null
   script:
     - export ANDROID_HOME=/usr/lib/android-sdk
     - ./gradlew clean build dokkaHtmlMultiModule -x check -x allTests -x test
