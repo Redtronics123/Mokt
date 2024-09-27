@@ -28,7 +28,7 @@ docs_build:
     - set -e
     - export DISPLAY=:99
     - Xvfb :99 &
-    - /opt/builder/bin/idea.sh helpbuilderinspect -source-dir ./docs -product $INSTANCE --runner gitlab -output-dir public/ || true
+    - /opt/builder/bin/idea.sh helpbuilderinspect -source-dir ./docs -product ${WRITERSITE_INSTANCE} --runner gitlab -output-dir public/ || true
     - test -e public/$ARTIFACT
   artifacts:
     paths:
