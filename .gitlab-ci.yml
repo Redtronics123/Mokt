@@ -6,22 +6,23 @@ stages:
   - docs_test
   - docs_publish
   - kotlin_publish
+  - build
 
 variables:
   WRITERSIDE_BUILDER_VERSION: "242.21870"
   WRITERSITE_INSTANCE: "docs/m"
   ANDROID_IMAGE: "ghcr.io/cirruslabs/android-sdk:34"
 
-#kotlin_build:
-#  image: ${ANDROID_IMAGE}
-#  stage: kotlin_build
-#  before_script:
-#    - apt update -y && apt upgrade -y
-#    - apt install curl gcc cargo -y
-#  script:
-#    - ./gradlew clean build dokkaHtmlMultiModule -x check -x allTests -x test
+.kotlin_build:
+  image: ${ANDROID_IMAGE}
+  stage: kotlin_build
+  before_script:
+    - apt update -y && apt upgrade -y
+    - apt install curl gcc cargo -y
+  script:
+    - ./gradlew clean build dokkaHtmlMultiModule -x check -x allTests -x test
 
-docs_build:
+.docs_build:
   image: registry.jetbrains.team/p/writerside/builder/writerside-builder:${WRITERSIDE_BUILDER_VERSION}
   stage: docs_build
   script:
@@ -34,6 +35,13 @@ docs_build:
     paths:
       - public/report.json
     expire_in: 10 days
+
+build:
+  stage: build
+  extends:
+    - .kotlin_build
+    - .docs_build
+  parallel: 2
 
 #kotlin_test:
 #  image: ${ANDROID_IMAGE}
