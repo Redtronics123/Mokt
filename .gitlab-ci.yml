@@ -63,4 +63,4 @@ docs_test:
   script:
     - cd public
     - curl -o wrs-checker.jar -L https://packages.jetbrains.team/maven/p/writerside/maven/com/jetbrains/writerside/writerside-ci-checker/1.0/writerside-ci-checker-1.0.jar
-    - java -jar wrs-checker.jar report.json $INSTANCE
+    - java -jar wrs-checker.jar report.json ${WRITERSITE_INSTANCE}
