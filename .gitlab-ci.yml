@@ -53,7 +53,7 @@ kotlin_test:
         - build/test-results/test/TEST-*.xml
 
 docs_test:
-  stage: test
+  stage: docs_test
   image: ubuntu:latest
   needs:
     - docs_build
