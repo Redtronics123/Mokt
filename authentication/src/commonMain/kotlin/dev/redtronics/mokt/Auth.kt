@@ -19,7 +19,7 @@ import io.ktor.http.*
 import kotlin.reflect.KProperty
 
 /**
- * Provides a way to access the selected authentication provider.
+ * Provides a [AuthProvider] which can be used to access the selected provider and authenticate with them.
  *
  * @since 0.0.1
  * @author Nils Jäkel
@@ -43,9 +43,9 @@ public class AuthProvider<in T : Provider> @PublishedApi internal constructor(pr
  * @since 0.0.1
  * @author Nils Jäkel
  */
-public suspend inline fun <reified T : Provider> auth(url: Url, noinline builder: suspend T.() -> Unit): AuthProvider<T> = when (T::class) {
+public suspend inline fun <reified T : Provider> auth(noinline builder: suspend T.() -> Unit): AuthProvider<T> = when (T::class) {
     Microsoft::class -> {
-        val microsoft = Microsoft(url).apply { builder(this as T) }
+        val microsoft = Microsoft().apply { builder(this as T) }
         if (microsoft.clientId == null) throw IllegalArgumentException("Client id is not set")
 
         require(Regex("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}").matches(microsoft.clientId!!)) { "Client id is not valid" }
