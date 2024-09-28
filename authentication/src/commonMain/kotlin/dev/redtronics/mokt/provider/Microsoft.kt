@@ -16,7 +16,6 @@ package dev.redtronics.mokt.provider
 import dev.redtronics.mokt.getEnv
 import dev.redtronics.mokt.provider.builder.MSDeviceAuthBuilder
 import dev.redtronics.mokt.provider.builder.MSOAuthBuilder
-import io.ktor.http.*
 
 /**
  * Microsoft authentication provider.
@@ -42,16 +41,41 @@ public class Microsoft : Provider {
      * */
     public var clientId: String? = getEnv("MS_CLIENT_ID")
 
-    public var useHttpsByRedirect: Boolean = false
-
+    /**
+     * Detects which authentication method is used.
+     * If no auth flow is started, this will be null.
+     *
+     * @see MSAuthMethod
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     * */
     public var authMethod: MSAuthMethod? = null
         private set
 
+    /**
+     * Configuration for the OAuth 2.0 authentication flow.
+     *
+     * @param builder The builder to configure the OAuth 2.0 flow.
+     * @return The result of the builder [T].
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     * */
     public suspend fun <T> oauth2(builder: suspend MSOAuthBuilder.() -> T): T {
         authMethod = MSAuthMethod.OAUTH2
         MSOAuthBuilder().apply { return builder() }
     }
 
+    /**
+     * Configuration for the device authentication flow.
+     *
+     * @param builder The builder to configure the device flow.
+     * @return The result of the builder [T].
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     * */
     public suspend fun <T> device(builder: suspend MSDeviceAuthBuilder.() -> T): T {
         authMethod = MSAuthMethod.DEVICE_AUTH
         MSDeviceAuthBuilder().apply { return builder() }
