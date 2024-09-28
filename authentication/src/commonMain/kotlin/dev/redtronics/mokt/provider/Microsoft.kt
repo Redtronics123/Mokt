@@ -18,21 +18,31 @@ import dev.redtronics.mokt.provider.builder.MSDeviceAuthBuilder
 import dev.redtronics.mokt.provider.builder.MSOAuthBuilder
 import io.ktor.http.*
 
-public class Microsoft(
-    override var url: Url
-) : Provider {
+/**
+ * Microsoft authentication provider.
+ * Interacts with the Microsoft API via device authentication or oauth2.
+ *
+ * @since 0.0.1
+ * @author Nils Jäkel
+ * */
+public class Microsoft : Provider {
     override val name: String
         get() = "Microsoft"
 
-    override val host: String
-        get() = url.host
-
-    override val port: Int
-        get() = url.port
+    /**
+     * The client id for the Microsoft provider.
+     *
+     * If the client id is not set, the provider will try to get the client id
+     * from the environment MS_CLIENT_ID.
+     *
+     * @throws IllegalArgumentException If the client id is not valid or null.
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     * */
+    public var clientId: String? = getEnv("MS_CLIENT_ID")
 
     public var useHttpsByRedirect: Boolean = false
-
-    public var clientId: String? = getEnv("MS_CLIENT_ID")
 
     public var authMethod: MSAuthMethod? = null
         private set
