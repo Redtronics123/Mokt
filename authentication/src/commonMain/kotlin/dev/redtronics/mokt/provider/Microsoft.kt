@@ -64,7 +64,9 @@ public class Microsoft : Provider {
      * */
     public suspend fun <T> oauth2(builder: suspend MSOAuthBuilder.() -> T): T {
         authMethod = MSAuthMethod.OAUTH2
-        MSOAuthBuilder().apply { return builder() }
+
+        val oauthBuilder = MSOAuthBuilder()
+        return builder(oauthBuilder).apply { oauthBuilder.build() }
     }
 
     /**
@@ -78,10 +80,11 @@ public class Microsoft : Provider {
      * */
     public suspend fun <T> device(builder: suspend MSDeviceAuthBuilder.() -> T): T {
         authMethod = MSAuthMethod.DEVICE_AUTH
-        MSDeviceAuthBuilder().apply { return builder() }
+
+        val deviceAuthBuilder = MSDeviceAuthBuilder()
+        return builder(deviceAuthBuilder).apply { deviceAuthBuilder.build() }
     }
 }
-
 
 /**
  * Defines the different authentication methods used by the Microsoft provider.
@@ -115,5 +118,65 @@ public enum class MSAuthMethod(public val authMethodName: String) {
          * @author Nils Jäkel
          */
         public fun byName(name: String): MSAuthMethod = entries.first { it.authMethodName == name }
+    }
+}
+
+/**
+ * Defines the different tenants used by the Microsoft provider.
+ *
+ * @property value The name of the tenant.
+ *
+ * @since 0.0.1
+ * @author Nils Jäkel
+ */
+public enum class MSTenant(public val value: String)  {
+    CONSUMERS("consumers"),
+    ORGANIZATIONS("organizations"),
+    COMMON("common");
+
+    public companion object {
+        /**
+         * Finds an [MSTenant] by its name.
+         *
+         * @param name The name of the tenant.
+         * @return The [MSTenant] with the given name.
+         *
+         * @throws NoSuchElementException If no tenant is found with the given name.
+         *
+         * @since 0.0.1
+         * @author Nils Jäkel
+         */
+        public fun byName(name: String): MSTenant = entries.first { it.value == name }
+    }
+}
+
+/**
+ * Defines the different auth scopes used by the Microsoft provider.
+ *
+ * @property value The name of the scope.
+ *
+ * @since 0.0.1
+ * @author Nils Jäkel
+ */
+public enum class MSScopes(public val value: String) {
+    OPENID("openid"),
+    PROFILE("profile"),
+    EMAIL("email"),
+    OFFLINE_ACCESS("offline_access"),
+    XBOX_LIVE_SIGNIN("XBoxLive.signin");
+
+    public companion object {
+        /**
+         * Finds an [MSTenant] by its name.
+         *
+         * @param name The name of the tenant.
+         * @return The [MSTenant] with the given name.
+         *
+         * @throws NoSuchElementException If no tenant is found with the given name.
+         *
+         * @since 0.0.1
+         * @author Nils Jäkel
+         */
+        public fun byName(name: String): MSScopes = entries.first { it.value == name }
     }
 }
