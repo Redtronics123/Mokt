@@ -30,7 +30,6 @@ public class Microsoft : Provider {
 
     /**
      * The client id for the Microsoft provider.
-     *
      * If the client id is not set, the provider will try to get the client id
      * from the environment MS_CLIENT_ID.
      *
@@ -40,6 +39,20 @@ public class Microsoft : Provider {
      * @author Nils Jäkel
      * */
     public var clientId: String? = getEnv("MS_CLIENT_ID")
+
+    /**
+     * The [MSTenant] value in the path of the request URL can be used to control
+     * who can sign in to the application. For guest scenarios where you sign in a user from one tenant into another tenant,
+     * you must provide the tenant identifier to sign them into the target tenant.
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     * */
+    public var tenant: MSTenant = MSTenant.COMMON
+
+
+    public val scopes: List<MSScopes>
+        get() = listOf()
 
     /**
      * Detects which authentication method is used.
@@ -65,7 +78,7 @@ public class Microsoft : Provider {
     public suspend fun <T> oauth2(builder: suspend MSOAuthBuilder.() -> T): T {
         authMethod = MSAuthMethod.OAUTH2
 
-        val oauthBuilder = MSOAuthBuilder()
+        val oauthBuilder = MSOAuthBuilder(tenant, scopes)
         return builder(oauthBuilder).apply { oauthBuilder.build() }
     }
 
@@ -81,9 +94,23 @@ public class Microsoft : Provider {
     public suspend fun <T> device(builder: suspend MSDeviceAuthBuilder.() -> T): T {
         authMethod = MSAuthMethod.DEVICE_AUTH
 
-        val deviceAuthBuilder = MSDeviceAuthBuilder()
+        val deviceAuthBuilder = MSDeviceAuthBuilder(tenant, scopes)
         return builder(deviceAuthBuilder).apply { deviceAuthBuilder.build() }
     }
+}
+
+public abstract class MsAuth internal constructor() {
+    public abstract val tenant: MSTenant
+
+    public abstract val scopes: List<MSScopes>
+
+    /**
+     * Builds the authentication configuration and validates it.
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     * */
+    internal abstract fun build()
 }
 
 /**
