@@ -12,6 +12,7 @@
 package dev.redtronics.mokt.network
 
 import io.ktor.client.*
+import kotlinx.serialization.json.Json
 
 /**
  * Mokt's HTTP client to interact with the Minecraft World (API).
@@ -20,3 +21,10 @@ import io.ktor.client.*
  * @author Nils Jäkel
  * */
 public expect val httpClient: HttpClient
+
+public val defaultJson: Json = Json {
+    ignoreUnknownKeys = true
+    isLenient = true
+    encodeDefaults = true
+    prettyPrint = true
+}
