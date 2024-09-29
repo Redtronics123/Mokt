@@ -10,3 +10,5 @@ public actual fun getEnv(key: String): String? {
     }
     return value
 }
+
+public actual val os: OsType = OsType.WINDOWS
