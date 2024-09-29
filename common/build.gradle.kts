@@ -53,7 +53,6 @@ kotlin {
                 api(libs.ktor.client.content.negotiation)
 
                 api(libs.kotlin.reflect)
-                implementation(npm("open", "10.1.0"))
             }
         }
 
@@ -82,6 +81,7 @@ kotlin {
             dependencies {
                 api(libs.kotlinx.coroutines.core.js)
                 api(libs.ktor.client.js)
+                implementation(npm("open", "10.1.0"))
             }
         }
 
@@ -101,6 +101,7 @@ kotlin {
             dependencies {
                 api(libs.kotlinx.coroutines.android)
                 api(libs.ktor.client.android)
+                implementation(libs.androidx.browser)
             }
         }
 
