@@ -53,6 +53,7 @@ kotlin {
                 api(libs.ktor.client.content.negotiation)
 
                 api(libs.kotlin.reflect)
+                implementation(npm("open", "10.1.0"))
             }
         }
 
