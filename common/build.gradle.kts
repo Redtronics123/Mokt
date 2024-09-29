@@ -53,6 +53,7 @@ kotlin {
                 api(libs.ktor.client.content.negotiation)
 
                 api(libs.kotlin.reflect)
+                api(libs.kotlinx.serialization.json)
             }
         }
 
