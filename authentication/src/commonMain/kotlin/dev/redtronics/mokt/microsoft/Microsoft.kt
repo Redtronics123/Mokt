@@ -17,6 +17,10 @@ import dev.redtronics.mokt.getEnv
 import dev.redtronics.mokt.Provider
 import dev.redtronics.mokt.microsoft.builder.MSDeviceAuthBuilder
 import dev.redtronics.mokt.microsoft.builder.MSOAuthBuilder
+import dev.redtronics.mokt.network.client
+import dev.redtronics.mokt.network.defaultJson
+import io.ktor.client.*
+import kotlinx.serialization.json.Json
 
 /**
  * Microsoft authentication provider.
@@ -28,6 +32,10 @@ import dev.redtronics.mokt.microsoft.builder.MSOAuthBuilder
 public class Microsoft : Provider {
     override val name: String
         get() = "Microsoft"
+
+    override var httpClient: HttpClient = client
+
+    override var json: Json = defaultJson
 
     /**
      * The client id for the Microsoft provider.
@@ -79,7 +87,7 @@ public class Microsoft : Provider {
     public suspend fun <T> oauth2(builder: suspend MSOAuthBuilder.() -> T): T {
         authMethod = MSAuthMethod.OAUTH2
 
-        val oauthBuilder = MSOAuthBuilder(tenant, scopes)
+        val oauthBuilder = MSOAuthBuilder(tenant, scopes, httpClient, json)
         return builder(oauthBuilder).apply { oauthBuilder.build() }
     }
 
@@ -95,15 +103,16 @@ public class Microsoft : Provider {
     public suspend fun <T> device(builder: suspend MSDeviceAuthBuilder.() -> T): T {
         authMethod = MSAuthMethod.DEVICE_AUTH
 
-        val deviceAuthBuilder = MSDeviceAuthBuilder(tenant, scopes)
+        val deviceAuthBuilder = MSDeviceAuthBuilder(tenant, scopes, httpClient, json)
         return builder(deviceAuthBuilder).apply { deviceAuthBuilder.build() }
     }
 }
 
 public abstract class MsAuth internal constructor() {
     public abstract val tenant: MSTenant
-
     public abstract val scopes: List<MSScopes>
+    public abstract val httpClient: HttpClient
+    public abstract val json: Json
 
     /**
      * Builds the authentication configuration and validates it.

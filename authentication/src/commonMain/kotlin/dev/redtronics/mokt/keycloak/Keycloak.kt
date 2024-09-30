@@ -12,8 +12,16 @@
 package dev.redtronics.mokt.keycloak
 
 import dev.redtronics.mokt.Provider
+import dev.redtronics.mokt.network.client
+import dev.redtronics.mokt.network.defaultJson
+import io.ktor.client.*
+import kotlinx.serialization.json.Json
 
 public class Keycloak : Provider {
     override val name: String
         get() = "Keycloak"
+
+    override var httpClient: HttpClient = client
+
+    override var json: Json = defaultJson
 }
