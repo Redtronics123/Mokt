@@ -52,7 +52,13 @@ public class MSOAuthBuilder internal constructor(
     public val tokenEndpointUrl: Url
         get() = Url("https://login.microsoftonline.com/${tenant.value}/oauth2/v2.0/token")
 
-     /**
+    public var responseType: ResponseType = ResponseType.CODE
+
+    public var responseMode: ResponseMode = ResponseMode.QUERY
+
+    public var state: String = ""
+
+    /**
      * Checks if the local redirect URL is using HTTPS.
      * If this is not the case, the validation check will throw an exception.
      *
