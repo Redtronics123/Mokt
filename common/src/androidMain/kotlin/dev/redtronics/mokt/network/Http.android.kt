@@ -16,7 +16,7 @@ import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.logging.*
 
-public actual val httpClient: HttpClient = HttpClient(Android) {
+public actual val client: HttpClient = HttpClient(Android) {
     install(Logging) {
         level = LogLevel.INFO
     }

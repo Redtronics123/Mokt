@@ -16,7 +16,7 @@ import io.ktor.client.engine.winhttp.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.logging.*
 
-public actual val httpClient: HttpClient = HttpClient(WinHttp) {
+public actual val client: HttpClient = HttpClient(WinHttp) {
     install(Logging) {
         level = LogLevel.INFO
     }

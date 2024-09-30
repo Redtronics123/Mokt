@@ -20,7 +20,7 @@ import kotlinx.serialization.json.Json
  * @since 0.0.1
  * @author Nils Jäkel
  * */
-public expect val httpClient: HttpClient
+public expect val client: HttpClient
 
 public val defaultJson: Json = Json {
     ignoreUnknownKeys = true

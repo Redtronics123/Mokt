@@ -16,7 +16,7 @@ import io.ktor.client.engine.js.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.logging.*
 
-public actual val httpClient: HttpClient = HttpClient(Js) {
+public actual val client: HttpClient = HttpClient(Js) {
     install(Logging) {
         level = LogLevel.INFO
     }
