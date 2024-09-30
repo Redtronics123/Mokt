@@ -14,9 +14,9 @@
 package dev.redtronics.mokt.microsoft.builder
 
 import dev.redtronics.mokt.getEnv
-import dev.redtronics.mokt.openInBrowser
 import dev.redtronics.mokt.microsoft.MSScopes
 import dev.redtronics.mokt.microsoft.MSTenant
+import dev.redtronics.mokt.openInBrowser
 import dev.redtronics.mokt.microsoft.MsAuth
 import dev.redtronics.mokt.microsoft.html.failurePage
 import dev.redtronics.mokt.microsoft.html.successPage
@@ -24,16 +24,20 @@ import dev.redtronics.mokt.microsoft.response.OAuthCode
 import dev.redtronics.mokt.microsoft.response.OAuthError
 import dev.redtronics.mokt.microsoft.server.oauthRouting
 import dev.redtronics.mokt.microsoft.server.setup
+import io.ktor.client.*
 import io.ktor.http.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.server.util.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.html.HTML
+import kotlinx.serialization.json.Json
 
 public class MSOAuthBuilder internal constructor(
     override val tenant: MSTenant,
-    override val scopes: List<MSScopes>
+    override val scopes: List<MSScopes>,
+    override val httpClient: HttpClient,
+    override val json: Json
 ) : MsAuth() {
     /**
      * The local redirect URL. On default, it will try to get the url from the environment variable `LOCAL_REDIRECT_URL`.
@@ -83,10 +87,10 @@ public class MSOAuthBuilder internal constructor(
      * */
     public var failureRedirectPage: HTML.() -> Unit = { failurePage() }
 
-    public suspend fun accessToken(
+    public suspend fun requestAuthCode(
         browser: suspend (url: Url) -> Unit = { url -> openInBrowser(url) },
         onRequestError: suspend (err: OAuthError) -> Unit = {}
-    ) {
+    ): OAuthCode {
         val authCodeChannel: Channel<OAuthCode> = Channel()
         val path = localRedirectUrl.fullPath.ifBlank { "/" }
 
@@ -105,9 +109,31 @@ public class MSOAuthBuilder internal constructor(
         }
 
         browser(Url(msEndpointUrl))
+
+        return authCodeChannel.receive()
+    }
+
+    public suspend fun requestAuthCodeWithHybridFlow() {
+
+    }
+
+    public suspend fun requestAuthCodeWithStandardFlow() {
+
     }
 
     override fun build() {
         if (requireHttpsByRedirect && !localRedirectUrl.protocol.isSecure()) throw IllegalArgumentException("Local redirect URL is not using HTTPS")
     }
+}
+
+public enum class ResponseType(public val value: String) {
+    CODE("code"),
+    TOKEN("token"),
+    ID_TOKEN("id_token");
+}
+
+public enum class ResponseMode(public val value: String) {
+    QUERY("query"),
+    FRAGMENT("fragment"),
+    FORM_POST("form_post");
 }
