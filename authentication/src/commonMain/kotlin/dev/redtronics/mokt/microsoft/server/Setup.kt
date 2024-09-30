@@ -9,16 +9,21 @@
  * and/or sell copies of the Software.
  */
 
-package dev.redtronics.mokt.provider
+package dev.redtronics.mokt.microsoft.server
+
+import dev.redtronics.mokt.network.defaultJson
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.contentnegotiation.*
 
 /**
- * Central adapter for the authentication providers.
- *
- * @property name The name of the provider.
+ * Sets up the server with their default settings.
  *
  * @since 0.0.1
  * @author Nils Jäkel
- */
-public interface Provider {
-    public val name: String
+ * */
+internal fun Application.setup() {
+    install(ContentNegotiation) {
+        json(json = defaultJson)
+    }
 }

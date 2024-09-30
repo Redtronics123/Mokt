@@ -11,11 +11,9 @@
 
 package dev.redtronics.mokt
 
-import dev.redtronics.mokt.provider.Authentik
-import dev.redtronics.mokt.provider.Keycloak
-import dev.redtronics.mokt.provider.Microsoft
-import dev.redtronics.mokt.provider.Provider
-import io.ktor.http.*
+import dev.redtronics.mokt.authentik.Authentik
+import dev.redtronics.mokt.keycloak.Keycloak
+import dev.redtronics.mokt.microsoft.Microsoft
 import kotlin.reflect.KProperty
 
 /**

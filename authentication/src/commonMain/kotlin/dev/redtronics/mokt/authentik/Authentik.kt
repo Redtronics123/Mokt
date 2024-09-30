@@ -9,7 +9,9 @@
  * and/or sell copies of the Software.
  */
 
-package dev.redtronics.mokt.provider
+package dev.redtronics.mokt.authentik
+
+import dev.redtronics.mokt.Provider
 
 public class Authentik : Provider {
     override val name: String

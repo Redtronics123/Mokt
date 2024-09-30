@@ -11,17 +11,19 @@
 
 @file:Suppress("MemberVisibilityCanBePrivate")
 
-package dev.redtronics.mokt.provider.builder
+package dev.redtronics.mokt.microsoft.builder
 
 import dev.redtronics.mokt.getEnv
 import dev.redtronics.mokt.openInBrowser
-import dev.redtronics.mokt.provider.MSScopes
-import dev.redtronics.mokt.provider.MSTenant
-import dev.redtronics.mokt.provider.MsAuth
-import dev.redtronics.mokt.response.OAuthCode
-import dev.redtronics.mokt.response.OAuthError
-import dev.redtronics.mokt.server.oauthRouting
-import dev.redtronics.mokt.server.setup
+import dev.redtronics.mokt.microsoft.MSScopes
+import dev.redtronics.mokt.microsoft.MSTenant
+import dev.redtronics.mokt.microsoft.MsAuth
+import dev.redtronics.mokt.microsoft.html.failurePage
+import dev.redtronics.mokt.microsoft.html.successPage
+import dev.redtronics.mokt.microsoft.response.OAuthCode
+import dev.redtronics.mokt.microsoft.response.OAuthError
+import dev.redtronics.mokt.microsoft.server.oauthRouting
+import dev.redtronics.mokt.microsoft.server.setup
 import io.ktor.http.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
@@ -59,9 +61,21 @@ public class MSOAuthBuilder internal constructor(
      * */
     public var requireHttpsByRedirect: Boolean = false
 
-    public var successRedirectPage: HTML.() -> Unit = {}
+     /**
+     * The page that will be shown after a successful authorization.
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     * */
+    public var successRedirectPage: HTML.() -> Unit = { successPage() }
 
-    public var failureRedirectPage: HTML.() -> Unit = {}
+    /**
+     * The page that will be shown after a failed authorization.
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     * */
+    public var failureRedirectPage: HTML.() -> Unit = { failurePage() }
 
     public suspend fun accessToken(
         browser: suspend (url: Url) -> Unit = { url -> openInBrowser(url) },

@@ -9,16 +9,11 @@
  * and/or sell copies of the Software.
  */
 
-@file:Suppress("MemberVisibilityCanBePrivate")
+package dev.redtronics.mokt.keycloak
 
-package dev.redtronics.mokt.provider.builder
+import dev.redtronics.mokt.Provider
 
-import dev.redtronics.mokt.provider.MSScopes
-import dev.redtronics.mokt.provider.MSTenant
-import dev.redtronics.mokt.provider.MsAuth
-
-public class MSDeviceAuthBuilder(override val tenant: MSTenant, override val scopes: List<MSScopes>) : MsAuth() {
-    override fun build() {
-
-    }
+public class Keycloak : Provider {
+    override val name: String
+        get() = "Keycloak"
 }

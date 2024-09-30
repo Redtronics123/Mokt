@@ -9,9 +9,16 @@
  * and/or sell copies of the Software.
  */
 
-package dev.redtronics.mokt.provider
+package dev.redtronics.mokt
 
-public class Keycloak : Provider {
-    override val name: String
-        get() = "Keycloak"
+/**
+ * Central adapter for the authentication providers.
+ *
+ * @property name The name of the provider.
+ *
+ * @since 0.0.1
+ * @author Nils Jäkel
+ */
+public interface Provider {
+    public val name: String
 }

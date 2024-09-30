@@ -11,11 +11,12 @@
 
 @file:Suppress("MemberVisibilityCanBePrivate")
 
-package dev.redtronics.mokt.provider
+package dev.redtronics.mokt.microsoft
 
 import dev.redtronics.mokt.getEnv
-import dev.redtronics.mokt.provider.builder.MSDeviceAuthBuilder
-import dev.redtronics.mokt.provider.builder.MSOAuthBuilder
+import dev.redtronics.mokt.Provider
+import dev.redtronics.mokt.microsoft.builder.MSDeviceAuthBuilder
+import dev.redtronics.mokt.microsoft.builder.MSOAuthBuilder
 
 /**
  * Microsoft authentication provider.
