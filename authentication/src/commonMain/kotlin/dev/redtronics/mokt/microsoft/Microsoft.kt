@@ -20,6 +20,7 @@ import dev.redtronics.mokt.microsoft.builder.MSOAuthBuilder
 import dev.redtronics.mokt.network.client
 import dev.redtronics.mokt.network.defaultJson
 import io.ktor.client.*
+import io.ktor.http.*
 import kotlinx.serialization.json.Json
 
 /**
@@ -29,7 +30,7 @@ import kotlinx.serialization.json.Json
  * @since 0.0.1
  * @author Nils Jäkel
  * */
-public class Microsoft : Provider {
+public class Microsoft @PublishedApi internal constructor() : Provider {
     override val name: String
         get() = "Microsoft"
 
@@ -61,7 +62,10 @@ public class Microsoft : Provider {
 
 
     public val scopes: List<MSScopes>
-        get() = listOf()
+        get() = MSScopes.allScopes
+
+    public val tokenEndpointUrl: Url
+        get() = Url("https://login.microsoftonline.com/${tenant.value}/oauth2/v2.0/token")
 
     /**
      * Detects which authentication method is used.
@@ -87,7 +91,7 @@ public class Microsoft : Provider {
     public suspend fun <T> oauth2(builder: suspend MSOAuthBuilder.() -> T): T {
         authMethod = MSAuthMethod.OAUTH2
 
-        val oauthBuilder = MSOAuthBuilder(tenant, scopes, httpClient, json)
+        val oauthBuilder = MSOAuthBuilder(this)
         return builder(oauthBuilder).apply { oauthBuilder.build() }
     }
 
@@ -103,24 +107,13 @@ public class Microsoft : Provider {
     public suspend fun <T> device(builder: suspend MSDeviceAuthBuilder.() -> T): T {
         authMethod = MSAuthMethod.DEVICE_AUTH
 
-        val deviceAuthBuilder = MSDeviceAuthBuilder(tenant, scopes, httpClient, json)
+        val deviceAuthBuilder = MSDeviceAuthBuilder(this)
         return builder(deviceAuthBuilder).apply { deviceAuthBuilder.build() }
     }
 }
 
-public abstract class MsAuth internal constructor() {
-    public abstract val tenant: MSTenant
-    public abstract val scopes: List<MSScopes>
-    public abstract val httpClient: HttpClient
-    public abstract val json: Json
-
-    /**
-     * Builds the authentication configuration and validates it.
-     *
-     * @since 0.0.1
-     * @author Nils Jäkel
-     * */
-    internal abstract fun build()
+internal interface MSAuth {
+    val ms: Microsoft
 }
 
 /**
@@ -215,5 +208,8 @@ public enum class MSScopes(public val value: String) {
          * @author Nils Jäkel
          */
         public fun byName(name: String): MSScopes = entries.first { it.value == name }
+
+        public val allScopes: List<MSScopes>
+            get() = entries.toList()
     }
 }
