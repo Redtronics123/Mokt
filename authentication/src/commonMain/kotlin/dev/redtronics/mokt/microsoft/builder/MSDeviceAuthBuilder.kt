@@ -12,23 +12,32 @@
 
 package dev.redtronics.mokt.microsoft.builder
 
-import dev.redtronics.mokt.microsoft.MSScopes
-import dev.redtronics.mokt.microsoft.MSTenant
-import dev.redtronics.mokt.microsoft.MsAuth
-import io.ktor.client.*
-import kotlinx.serialization.json.Json
+import dev.redtronics.mokt.microsoft.MSAuth
+import dev.redtronics.mokt.microsoft.Microsoft
+import dev.redtronics.mokt.microsoft.response.CodeErrorResponse
+import dev.redtronics.mokt.microsoft.response.MSDeviceCodeResponse
+import io.ktor.client.request.forms.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 
-public class MSDeviceAuthBuilder(
-    override val tenant: MSTenant,
-    override val scopes: List<MSScopes>,
-    override val httpClient: HttpClient,
-    override val json: Json
-) : MsAuth() {
-    public suspend fun accessToken() {
+public class MSDeviceAuthBuilder internal constructor(override val ms: Microsoft) : MSAuth {
 
+    public suspend fun getAuthorizationCode(onRequestError: suspend (err: CodeErrorResponse) -> Unit = {}): MSDeviceCodeResponse {
+        val response = ms.httpClient.submitForm(
+            url = "https://login.microsoftonline.com/common/oauth2/v2.0/devicecode",
+            formParameters = parameters {
+                append("client_id", ms.clientId!!)
+                append("scope", ms.scopes.joinToString(" ") { it.value })
+            }
+        )
+
+        if (!response.status.isSuccess()) {
+            onRequestError(ms.json.decodeFromString(CodeErrorResponse.serializer(), response.bodyAsText()))
+        }
+        return ms.json.decodeFromString(MSDeviceCodeResponse.serializer(), response.bodyAsText())
     }
 
-    override fun build() {
+    public fun build() {
 
     }
 }
