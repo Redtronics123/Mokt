@@ -14,31 +14,23 @@
 package dev.redtronics.mokt.microsoft.builder
 
 import dev.redtronics.mokt.getEnv
-import dev.redtronics.mokt.microsoft.MSScopes
-import dev.redtronics.mokt.microsoft.MSTenant
+import dev.redtronics.mokt.microsoft.MSAuth
+import dev.redtronics.mokt.microsoft.Microsoft
 import dev.redtronics.mokt.openInBrowser
-import dev.redtronics.mokt.microsoft.MsAuth
 import dev.redtronics.mokt.microsoft.html.failurePage
 import dev.redtronics.mokt.microsoft.html.successPage
+import dev.redtronics.mokt.microsoft.response.CodeErrorResponse
 import dev.redtronics.mokt.microsoft.response.OAuthCode
-import dev.redtronics.mokt.microsoft.response.OAuthError
 import dev.redtronics.mokt.microsoft.server.oauthRouting
 import dev.redtronics.mokt.microsoft.server.setup
-import io.ktor.client.*
 import io.ktor.http.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.server.util.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.html.HTML
-import kotlinx.serialization.json.Json
 
-public class MSOAuthBuilder internal constructor(
-    override val tenant: MSTenant,
-    override val scopes: List<MSScopes>,
-    override val httpClient: HttpClient,
-    override val json: Json
-) : MsAuth() {
+public class MSOAuthBuilder internal constructor(override val ms: Microsoft) : MSAuth {
     /**
      * The local redirect URL. On default, it will try to get the url from the environment variable `LOCAL_REDIRECT_URL`.
      * Otherwise, the url `http://localhost:8080` will be used.
@@ -48,13 +40,9 @@ public class MSOAuthBuilder internal constructor(
      * */
     public var localRedirectUrl: Url = Url(getEnv("LOCAL_REDIRECT_URL") ?: "http://localhost:8080")
 
-
     public val authorizeEndpointUrl: Url
-        get() = Url("https://login.microsoftonline.com/${tenant.value}/oauth2/v2.0/authorize")
+        get() = Url("https://login.microsoftonline.com/${ms.tenant.value}/oauth2/v2.0/authorize")
 
-
-    public val tokenEndpointUrl: Url
-        get() = Url("https://login.microsoftonline.com/${tenant.value}/oauth2/v2.0/token")
 
     public var responseType: ResponseType = ResponseType.CODE
 
@@ -89,7 +77,7 @@ public class MSOAuthBuilder internal constructor(
 
     public suspend fun requestAuthCode(
         browser: suspend (url: Url) -> Unit = { url -> openInBrowser(url) },
-        onRequestError: suspend (err: OAuthError) -> Unit = {}
+        onRequestError: suspend (err: CodeErrorResponse) -> Unit = {}
     ): OAuthCode {
         val authCodeChannel: Channel<OAuthCode> = Channel()
         val path = localRedirectUrl.fullPath.ifBlank { "/" }
@@ -121,7 +109,7 @@ public class MSOAuthBuilder internal constructor(
 
     }
 
-    override fun build() {
+    public fun build() {
         if (requireHttpsByRedirect && !localRedirectUrl.protocol.isSecure()) throw IllegalArgumentException("Local redirect URL is not using HTTPS")
     }
 }
