@@ -12,8 +12,8 @@
 package dev.redtronics.mokt.microsoft.server
 
 import dev.redtronics.mokt.microsoft.response.OAuthCode
-import dev.redtronics.mokt.microsoft.response.OAuthError
-import dev.redtronics.mokt.microsoft.response.OAuthErrorItem
+import dev.redtronics.mokt.microsoft.response.CodeError
+import dev.redtronics.mokt.microsoft.response.CodeErrorResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.html.*
@@ -32,14 +32,14 @@ internal fun Application.oauthRouting(
     channel: Channel<OAuthCode>,
     successPage: HTML.() -> Unit,
     failurePage: HTML.() -> Unit,
-    onError: suspend (OAuthError) -> Unit
+    onError: suspend (err: CodeErrorResponse) -> Unit
 ) {
     routing {
         get(redirectPath) {
             val queryParams = call.request.queryParameters
             if (queryParams["code"] == null || queryParams["state"] == null) {
-                val oauthErrorCode = OAuthError(
-                    error = OAuthErrorItem.byName(queryParams["error"]!!),
+                val oauthErrorCode = CodeErrorResponse(
+                    error = CodeError.byName(queryParams["error"]!!),
                     errorDescription = queryParams["error_description"]!!
                 )
 
