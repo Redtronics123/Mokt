@@ -20,11 +20,34 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 
-public class MSDeviceAuthBuilder internal constructor(override val ms: Microsoft) : MSAuth {
+/**
+ * Builder to configure the Microsoft device authentication flow.
+ *
+ * @since 0.0.1
+ * @author Nils Jäkel
+ * */
+public class MSDeviceFlowBuilder internal constructor(override val ms: Microsoft) : MSAuth() {
+    /**
+     * The URL to the Microsoft Device Code endpoint.
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     */
+    public val deviceCodeEndpointUrl: Url
+        get() = Url("https://login.microsoftonline.com/common/oauth2/v2.0/devicecode")
 
-    public suspend fun getAuthorizationCode(onRequestError: suspend (err: CodeErrorResponse) -> Unit = {}): MSDeviceCodeResponse {
+    /**
+     * Requests an authorization code from the Microsoft Device Code endpoint.
+     *
+     * @param onRequestError The function to be called if an error occurs during the authorization code request.
+     * @return The [MSDeviceCodeResponse] of the authorization code request or null if an error occurs.
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     * */
+    public suspend fun requestAuthorizationCode(onRequestError: suspend (err: CodeErrorResponse) -> Unit = {}): MSDeviceCodeResponse? {
         val response = ms.httpClient.submitForm(
-            url = "https://login.microsoftonline.com/common/oauth2/v2.0/devicecode",
+            url = deviceCodeEndpointUrl.toString(),
             formParameters = parameters {
                 append("client_id", ms.clientId!!)
                 append("scope", ms.scopes.joinToString(" ") { it.value })
@@ -33,11 +56,12 @@ public class MSDeviceAuthBuilder internal constructor(override val ms: Microsoft
 
         if (!response.status.isSuccess()) {
             onRequestError(ms.json.decodeFromString(CodeErrorResponse.serializer(), response.bodyAsText()))
+            return null
         }
         return ms.json.decodeFromString(MSDeviceCodeResponse.serializer(), response.bodyAsText())
     }
 
-    public fun build() {
+    override fun build() {
 
     }
 }
