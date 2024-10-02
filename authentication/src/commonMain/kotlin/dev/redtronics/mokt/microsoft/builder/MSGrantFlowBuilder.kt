@@ -30,7 +30,7 @@ import io.ktor.server.util.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.html.HTML
 
-public class MSOAuthBuilder internal constructor(override val ms: Microsoft) : MSAuth {
+public class MSGrantFlowBuilder internal constructor(override val ms: Microsoft) : MSAuth() {
     /**
      * The local redirect URL. On default, it will try to get the url from the environment variable `LOCAL_REDIRECT_URL`.
      * Otherwise, the url `http://localhost:8080` will be used.
@@ -75,7 +75,7 @@ public class MSOAuthBuilder internal constructor(override val ms: Microsoft) : M
      * */
     public var failureRedirectPage: HTML.() -> Unit = { failurePage() }
 
-    public suspend fun requestAuthCode(
+    public suspend fun requestAuthorizationCode(
         browser: suspend (url: Url) -> Unit = { url -> openInBrowser(url) },
         onRequestError: suspend (err: CodeErrorResponse) -> Unit = {}
     ): OAuthCode {
@@ -101,15 +101,7 @@ public class MSOAuthBuilder internal constructor(override val ms: Microsoft) : M
         return authCodeChannel.receive()
     }
 
-    public suspend fun requestAuthCodeWithHybridFlow() {
-
-    }
-
-    public suspend fun requestAuthCodeWithStandardFlow() {
-
-    }
-
-    public fun build() {
+    override fun build() {
         if (requireHttpsByRedirect && !localRedirectUrl.protocol.isSecure()) throw IllegalArgumentException("Local redirect URL is not using HTTPS")
     }
 }
