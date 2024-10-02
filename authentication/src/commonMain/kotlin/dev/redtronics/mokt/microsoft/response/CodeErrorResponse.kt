@@ -41,17 +41,11 @@ public enum class CodeError(public val value: String) {
 
     internal object Serializer : KSerializer<CodeError> {
         override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(CodeError::class.simpleName!!, PrimitiveKind.STRING)
-
-        override fun deserialize(decoder: Decoder): CodeError {
-            return CodeError.byName(decoder.decodeString())
-        }
-
-        override fun serialize(encoder: Encoder, value: CodeError) {
-            encoder.encodeString(value.value)
-        }
+        override fun deserialize(decoder: Decoder): CodeError = CodeError.byName(decoder.decodeString())
+        override fun serialize(encoder: Encoder, value: CodeError) = encoder.encodeString(value.value)
     }
 
     public companion object {
-        public fun byName(name: String): CodeError = entries.first { it.value == name }
+        public fun byName(name: String): CodeError = entries.firstOrNull { it.value == name } ?: INVALID_REQUEST
     }
 }
