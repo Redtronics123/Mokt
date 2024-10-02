@@ -15,8 +15,8 @@ package dev.redtronics.mokt.microsoft
 
 import dev.redtronics.mokt.getEnv
 import dev.redtronics.mokt.Provider
-import dev.redtronics.mokt.microsoft.builder.MSDeviceAuthBuilder
-import dev.redtronics.mokt.microsoft.builder.MSOAuthBuilder
+import dev.redtronics.mokt.microsoft.builder.MSDeviceFlowBuilder
+import dev.redtronics.mokt.microsoft.builder.MSGrantFlowBuilder
 import dev.redtronics.mokt.network.client
 import dev.redtronics.mokt.network.defaultJson
 import io.ktor.client.*
@@ -34,8 +34,20 @@ public class Microsoft @PublishedApi internal constructor() : Provider {
     override val name: String
         get() = "Microsoft"
 
+    /**
+     * The http client used by the Microsoft provider.
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     * */
     override var httpClient: HttpClient = client
 
+    /**
+     * The json used by the Microsoft provider.
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     * */
     override var json: Json = defaultJson
 
     /**
@@ -60,10 +72,21 @@ public class Microsoft @PublishedApi internal constructor() : Provider {
      * */
     public var tenant: MSTenant = MSTenant.COMMON
 
-
+    /**
+     * The scopes of the Microsoft provider.
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     * */
     public val scopes: List<MSScopes>
         get() = MSScopes.allScopes
 
+    /**
+     * The url of the token endpoint.
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     * */
     public val tokenEndpointUrl: Url
         get() = Url("https://login.microsoftonline.com/${tenant.value}/oauth2/v2.0/token")
 
@@ -88,10 +111,10 @@ public class Microsoft @PublishedApi internal constructor() : Provider {
      * @since 0.0.1
      * @author Nils Jäkel
      * */
-    public suspend fun <T> oauth2(builder: suspend MSOAuthBuilder.() -> T): T {
+    public suspend fun <T> oauthGrantFlow(builder: suspend MSGrantFlowBuilder.() -> T): T {
         authMethod = MSAuthMethod.OAUTH2
 
-        val oauthBuilder = MSOAuthBuilder(this)
+        val oauthBuilder = MSGrantFlowBuilder(this)
         return builder(oauthBuilder).apply { oauthBuilder.build() }
     }
 
@@ -104,16 +127,18 @@ public class Microsoft @PublishedApi internal constructor() : Provider {
      * @since 0.0.1
      * @author Nils Jäkel
      * */
-    public suspend fun <T> device(builder: suspend MSDeviceAuthBuilder.() -> T): T {
+    public suspend fun <T> oauthDeviceFlow(builder: suspend MSDeviceFlowBuilder.() -> T): T {
         authMethod = MSAuthMethod.DEVICE_AUTH
 
-        val deviceAuthBuilder = MSDeviceAuthBuilder(this)
+        val deviceAuthBuilder = MSDeviceFlowBuilder(this)
         return builder(deviceAuthBuilder).apply { deviceAuthBuilder.build() }
     }
 }
 
-internal interface MSAuth {
-    val ms: Microsoft
+public abstract class MSAuth internal constructor() {
+    internal abstract val ms: Microsoft
+
+    internal abstract fun build()
 }
 
 /**
