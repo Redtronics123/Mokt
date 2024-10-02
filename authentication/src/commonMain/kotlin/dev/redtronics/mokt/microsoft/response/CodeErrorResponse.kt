@@ -29,6 +29,7 @@ public data class CodeErrorResponse(
 @Serializable(with = CodeError.Serializer::class)
 public enum class CodeError(public val value: String) {
     INVALID_REQUEST("invalid_request"),
+    INVALID_CLIENT("invalid_client"),
     UNAUTHORIZED_CLIENT("unauthorized_client"),
     ACCESS_DENIED("access_denied"),
     UNSUPPORTED_RESPONSE_TYPE("unsupported_response_type"),
@@ -39,14 +40,14 @@ public enum class CodeError(public val value: String) {
     INTERACTION_REQUIRED("interaction_required");
 
     internal object Serializer : KSerializer<CodeError> {
-        override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("CodeError", PrimitiveKind.STRING)
+        override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(CodeError::class.simpleName!!, PrimitiveKind.STRING)
 
         override fun deserialize(decoder: Decoder): CodeError {
-            TODO("Not yet implemented")
+            return CodeError.byName(decoder.decodeString())
         }
 
         override fun serialize(encoder: Encoder, value: CodeError) {
-            TODO("Not yet implemented")
+            encoder.encodeString(value.value)
         }
     }
 
