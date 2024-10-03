@@ -41,7 +41,7 @@ public enum class CodeError(public val value: String) {
 
     internal object Serializer : KSerializer<CodeError> {
         override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(CodeError::class.simpleName!!, PrimitiveKind.STRING)
-        override fun deserialize(decoder: Decoder): CodeError = CodeError.byName(decoder.decodeString())
+        override fun deserialize(decoder: Decoder): CodeError = byName(decoder.decodeString())
         override fun serialize(encoder: Encoder, value: CodeError) = encoder.encodeString(value.value)
     }
 
