@@ -9,6 +9,8 @@
  * and/or sell copies of the Software.
  */
 
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package dev.redtronics.mokt.network
 
 import kotlinx.coroutines.delay
@@ -25,8 +27,15 @@ public class IntervalPoller internal constructor(
     private val interval: Duration,
     private val builder: suspend IntervalPoller.() -> Unit
 ) {
+    public var isCancelled: Boolean = false
+        private set
+
+    public fun cancel() {
+        isCancelled = true
+    }
+
     internal suspend fun poll(cond: suspend () -> Boolean) {
-        while (cond()) {
+        while (cond() && !isCancelled) {
             delay(interval.toLong(DurationUnit.SECONDS))
             builder()
         }
