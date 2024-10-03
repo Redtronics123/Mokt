@@ -54,6 +54,7 @@ kotlin {
 
                 api(libs.kotlin.reflect)
                 api(libs.kotlinx.serialization.json)
+                api(libs.kotlinx.datetime)
             }
         }
 
