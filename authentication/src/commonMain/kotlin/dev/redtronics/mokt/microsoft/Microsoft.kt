@@ -78,8 +78,7 @@ public class Microsoft @PublishedApi internal constructor() : Provider {
      * @since 0.0.1
      * @author Nils Jäkel
      * */
-    public val scopes: List<MSScopes>
-        get() = MSScopes.allScopes
+    public var scopes: List<MSScopes> = MSScopes.allScopes
 
     /**
      * The url of the token endpoint.
