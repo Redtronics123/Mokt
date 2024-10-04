@@ -110,7 +110,7 @@ public class Microsoft @PublishedApi internal constructor() : Provider {
      * @since 0.0.1
      * @author Nils Jäkel
      * */
-    public suspend fun <T> grant(builder: suspend MSGrantFlowBuilder.() -> T): T {
+    public suspend fun <T> defaultGrant(builder: suspend MSGrantFlowBuilder.() -> T): T {
         authMethod = MSAuthMethod.OAUTH2
 
         val oauthBuilder = MSGrantFlowBuilder(this)
