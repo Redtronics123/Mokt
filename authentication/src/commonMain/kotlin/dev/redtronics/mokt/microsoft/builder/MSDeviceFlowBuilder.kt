@@ -62,7 +62,7 @@ public class MSDeviceFlowBuilder internal constructor(override val ms: Microsoft
      * @since 0.0.1
      * @author Nils Jäkel
      * */
-    public var display: suspend (deviceCodeResponse: MSDeviceCodeResponse) -> Unit = {}
+    public var display: suspend (deviceCodeResponse: DeviceCodeResponse) -> Unit = {}
 
     /**
      * Opens the browser to display the Microsoft Device Code Page.
@@ -86,12 +86,12 @@ public class MSDeviceFlowBuilder internal constructor(override val ms: Microsoft
      * Requests an authorization code from the Microsoft Device Code endpoint.
      *
      * @param onRequestError The function to be called if an error occurs during the authorization code request.
-     * @return The [MSDeviceCodeResponse] of the authorization code request or null if an error occurs.
+     * @return The [DeviceCodeResponse] of the authorization code request or null if an error occurs.
      *
      * @since 0.0.1
      * @author Nils Jäkel
      * */
-    public suspend fun requestAuthorizationCode(onRequestError: suspend (err: CodeErrorResponse) -> Unit = {}): MSDeviceCodeResponse? {
+    public suspend fun requestAuthorizationCode(onRequestError: suspend (err: CodeErrorResponse) -> Unit = {}): DeviceCodeResponse? {
         val response = ms.httpClient.submitForm(
             url = deviceCodeEndpointUrl.toString(),
             formParameters = parameters {
@@ -103,25 +103,25 @@ public class MSDeviceFlowBuilder internal constructor(override val ms: Microsoft
             onRequestError(ms.json.decodeFromString(CodeErrorResponse.serializer(), response.bodyAsText()))
             return null
         }
-        return ms.json.decodeFromString(MSDeviceCodeResponse.serializer(), response.bodyAsText())
+        return ms.json.decodeFromString(DeviceCodeResponse.serializer(), response.bodyAsText())
     }
 
     /**
      * Requests an access token from the Microsoft Device Login endpoint.
      *
      * @param displayMode The way how to display the authorization code to the user.
-     * @param deviceCodeResponse The [MSDeviceCodeResponse] of the authorization code request.
+     * @param deviceCodeResponse The [DeviceCodeResponse] of the authorization code request.
      * @param onRequestError The function to be called if an error occurs during the access token request.
-     * @return The [MSDeviceAccessResponse] of the access token request or null if an error occurs.
+     * @return The [DeviceAccessResponse] of the access token request or null if an error occurs.
      *
      * @since 0.0.1
      * @author Nils Jäkel
      * */
     public suspend fun requestAccessToken(
         displayMode: DisplayMode,
-        deviceCodeResponse: MSDeviceCodeResponse,
+        deviceCodeResponse: DeviceCodeResponse,
         onRequestError: suspend (err: DeviceAuthStateError) -> Unit = {},
-    ): MSDeviceAccessResponse? {
+    ): DeviceAccessResponse? {
         display(deviceCodeResponse)
         when (displayMode) {
             DisplayMode.BROWSER -> browser(deviceLoginEndpointUrl)
@@ -136,16 +136,16 @@ public class MSDeviceFlowBuilder internal constructor(override val ms: Microsoft
      * The loop to request an access token from the Microsoft Device Login endpoint.
      *
      * @param startTime The start time of the loop.
-     * @param deviceCodeResponse The [MSDeviceCodeResponse] of the authorization code request.
+     * @param deviceCodeResponse The [DeviceCodeResponse] of the authorization code request.
      * @param onRequestError The function to be called if an error occurs during the access token request.
-     * @return The [MSDeviceAccessResponse] of the access token request or null if an error occurs.
+     * @return The [DeviceAccessResponse] of the access token request or null if an error occurs.
      *
      * @since 0.0.1
      * @author Nils Jäkel
      * */
     private suspend fun authLoop(
         startTime: Long,
-        deviceCodeResponse: MSDeviceCodeResponse,
+        deviceCodeResponse: DeviceCodeResponse,
         onRequestError: suspend (err: DeviceAuthStateError) -> Unit
     ) = interval(
         interval = deviceCodeResponse.interval.seconds,
@@ -169,7 +169,7 @@ public class MSDeviceFlowBuilder internal constructor(override val ms: Microsoft
             }
             return@interval null
         }
-        return@interval ms.json.decodeFromString(MSDeviceAccessResponse.serializer(), responseBody)
+        return@interval ms.json.decodeFromString(DeviceAccessResponse.serializer(), responseBody)
     }
 
     override fun build() {

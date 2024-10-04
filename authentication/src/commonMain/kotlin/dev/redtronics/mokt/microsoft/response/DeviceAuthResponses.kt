@@ -14,7 +14,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class MSDeviceCodeResponse(
+public data class DeviceCodeResponse(
     @SerialName("device_code")
     public val deviceCode: String,
     @SerialName("user_code")
@@ -28,7 +28,7 @@ public data class MSDeviceCodeResponse(
 )
 
 @Serializable
-public data class MSDeviceAccessResponse(
+public data class DeviceAccessResponse(
     @SerialName("token_type")
     public val tokenType: String,
     public val scope: String,
