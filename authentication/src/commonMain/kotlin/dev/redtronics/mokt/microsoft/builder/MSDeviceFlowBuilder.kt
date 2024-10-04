@@ -91,7 +91,9 @@ public class MSDeviceFlowBuilder internal constructor(override val ms: Microsoft
      * @since 0.0.1
      * @author Nils Jäkel
      * */
-    public suspend fun requestAuthorizationCode(onRequestError: suspend (err: CodeErrorResponse) -> Unit = {}): DeviceCodeResponse? {
+    public suspend fun requestAuthorizationCode(
+        onRequestError: suspend (err: CodeErrorResponse) -> Unit = {}
+    ): DeviceCodeResponse? {
         val response = ms.httpClient.submitForm(
             url = deviceCodeEndpointUrl.toString(),
             formParameters = parameters {
@@ -120,7 +122,7 @@ public class MSDeviceFlowBuilder internal constructor(override val ms: Microsoft
     public suspend fun requestAccessToken(
         displayMode: DisplayMode,
         deviceCodeResponse: DeviceCodeResponse,
-        onRequestError: suspend (err: DeviceAuthStateError) -> Unit = {},
+        onRequestError: suspend (err: DeviceAuthStateError) -> Unit = {}
     ): DeviceAccessResponse? {
         display(deviceCodeResponse)
         when (displayMode) {
