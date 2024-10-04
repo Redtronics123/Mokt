@@ -23,22 +23,44 @@ import kotlin.time.DurationUnit
  * @since 0.0.1
  * @author Nils Jäkel
  */
-public class IntervalPoller internal constructor(
+public class IntervalPoller<T> internal constructor(
     private val interval: Duration,
-    private val builder: suspend IntervalPoller.() -> Unit
+    private val builder: suspend IntervalPoller<T>.() -> T
 ) {
+    /**
+     * Whether the poller has been cancelled.
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     * */
     public var isCancelled: Boolean = false
         private set
 
+    /**
+     * Cancels the poller.
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     * */
     public fun cancel() {
         isCancelled = true
     }
 
-    internal suspend fun poll(cond: suspend () -> Boolean) {
+    /**
+     * Polls the builder in an interval.
+     *
+     * @param cond The condition to check if the poller should stop.
+     * @return The result of the builder or null if the condition is false.
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     * */
+    internal suspend fun poll(cond: suspend () -> Boolean): T? {
         while (cond() && !isCancelled) {
             delay(interval.toLong(DurationUnit.SECONDS))
-            builder()
+            return builder() ?: continue
         }
+        return null
     }
 }
 
@@ -54,11 +76,11 @@ public class IntervalPoller internal constructor(
  * @since 0.0.1
  * @author Nils Jäkel
  */
-public suspend fun interval(
+public suspend fun <T> interval(
     interval: Duration,
     cond: suspend () -> Boolean = { true },
-    builder: suspend IntervalPoller.() -> Unit
-) {
+    builder: suspend IntervalPoller<T>.() -> T
+): T? {
     val poller = IntervalPoller(interval, builder)
     return poller.poll(cond)
 }
