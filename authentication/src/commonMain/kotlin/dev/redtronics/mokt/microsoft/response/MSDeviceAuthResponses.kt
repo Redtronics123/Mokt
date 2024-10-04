@@ -26,3 +26,18 @@ public data class MSDeviceCodeResponse(
     public val interval: Int,
     public val message: String
 )
+
+@Serializable
+public data class MSDeviceAccessResponse(
+    @SerialName("token_type")
+    public val tokenType: String,
+    public val scope: String,
+    @SerialName("expires_in")
+    public val expiresIn: Int,
+    @SerialName("ext_expires_in")
+    public val extExpiresIn: Int,
+    @SerialName("access_token")
+    public val accessToken: String,
+    @SerialName("refresh_token")
+    public val refreshToken: String
+)

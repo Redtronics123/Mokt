@@ -46,3 +46,34 @@ public enum class DeviceAuthStateErrorItem(public val value: String) {
         public fun byName(name: String): DeviceAuthStateErrorItem = entries.firstOrNull { it.value == name } ?: INVALID_REQUEST
     }
 }
+
+@Serializable
+public data class CodeErrorResponse(
+    public val error: CodeError,
+    @SerialName("error_description")
+    public val errorDescription: String
+)
+
+@Serializable(with = CodeError.Serializer::class)
+public enum class CodeError(public val value: String) {
+    INVALID_REQUEST("invalid_request"),
+    INVALID_CLIENT("invalid_client"),
+    UNAUTHORIZED_CLIENT("unauthorized_client"),
+    ACCESS_DENIED("access_denied"),
+    UNSUPPORTED_RESPONSE_TYPE("unsupported_response_type"),
+    SERVER_ERROR("server_error"),
+    TEMPORARY_UNAVAILABLE("temporarily_unavailable"),
+    INVALID_RESOURCE("invalid_resource"),
+    LOGIN_REQUIRED("login_required"),
+    INTERACTION_REQUIRED("interaction_required");
+
+    internal object Serializer : KSerializer<CodeError> {
+        override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(CodeError::class.simpleName!!, PrimitiveKind.STRING)
+        override fun deserialize(decoder: Decoder): CodeError = byName(decoder.decodeString())
+        override fun serialize(encoder: Encoder, value: CodeError) = encoder.encodeString(value.value)
+    }
+
+    public companion object {
+        public fun byName(name: String): CodeError = entries.firstOrNull { it.value == name } ?: INVALID_REQUEST
+    }
+}
