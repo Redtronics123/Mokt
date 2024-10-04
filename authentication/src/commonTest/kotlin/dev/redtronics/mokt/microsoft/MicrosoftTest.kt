@@ -46,4 +46,32 @@ class MicrosoftTest : FunSpec({
         }
         provider.tokenEndpointUrl.toString() shouldBe "https://login.microsoftonline.com/consumers/oauth2/v2.0/token"
     }
+
+    test("use right auth method") {
+        val provider by auth<Microsoft> {
+            clientId = "aa54f7f4-45f6-4f78-b95f-3b6cc98e0b7f"
+            device {}
+        }
+        provider.authMethod shouldBe MSAuthMethod.DEVICE_AUTH
+    }
+
+    test("getting auth method by name") {
+        val authMethod = MSAuthMethod.byName("oauth2")
+        authMethod shouldBe MSAuthMethod.OAUTH2
+    }
+
+    test("getting tenant by name") {
+        val tenant = MSTenant.byName("consumers")
+        tenant shouldBe MSTenant.CONSUMERS
+    }
+
+    test("getting scope by name") {
+        val scope = MSScopes.byName("XBoxLive.signin")
+        scope shouldBe MSScopes.XBOX_LIVE_SIGNIN
+    }
+
+    test("getting all scopes") {
+        val scopes = MSScopes.allScopes
+        MSScopes.entries.size shouldBe scopes.size
+    }
 })
