@@ -11,12 +11,12 @@
 
 @file:Suppress("MemberVisibilityCanBePrivate")
 
-package dev.redtronics.mokt.microsoft
+package dev.redtronics.mokt.provider.microsoft
 
 import dev.redtronics.mokt.getEnv
 import dev.redtronics.mokt.Provider
-import dev.redtronics.mokt.microsoft.builder.DeviceFlowBuilder
-import dev.redtronics.mokt.microsoft.builder.GrantFlowBuilder
+import dev.redtronics.mokt.provider.microsoft.builder.DeviceFlowBuilder
+import dev.redtronics.mokt.provider.microsoft.builder.GrantFlowBuilder
 import dev.redtronics.mokt.network.client
 import dev.redtronics.mokt.network.defaultJson
 import io.ktor.client.*

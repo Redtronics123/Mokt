@@ -11,18 +11,18 @@
 
 @file:Suppress("MemberVisibilityCanBePrivate")
 
-package dev.redtronics.mokt.microsoft.builder
+package dev.redtronics.mokt.provider.microsoft.builder
 
 import dev.redtronics.mokt.getEnv
-import dev.redtronics.mokt.microsoft.MSAuth
-import dev.redtronics.mokt.microsoft.Microsoft
+import dev.redtronics.mokt.provider.microsoft.MSAuth
+import dev.redtronics.mokt.provider.microsoft.Microsoft
 import dev.redtronics.mokt.openInBrowser
-import dev.redtronics.mokt.microsoft.html.failurePage
-import dev.redtronics.mokt.microsoft.html.successPage
-import dev.redtronics.mokt.microsoft.response.CodeErrorResponse
-import dev.redtronics.mokt.microsoft.response.OAuthCode
-import dev.redtronics.mokt.microsoft.server.oauthRouting
-import dev.redtronics.mokt.microsoft.server.setup
+import dev.redtronics.mokt.provider.microsoft.html.failurePage
+import dev.redtronics.mokt.provider.microsoft.html.successPage
+import dev.redtronics.mokt.provider.microsoft.response.CodeErrorResponse
+import dev.redtronics.mokt.provider.microsoft.response.OAuthCode
+import dev.redtronics.mokt.provider.microsoft.server.oauthRouting
+import dev.redtronics.mokt.provider.microsoft.server.setup
 import io.ktor.http.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*

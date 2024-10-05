@@ -9,7 +9,7 @@
  * and/or sell copies of the Software.
  */
 
-package dev.redtronics.mokt.microsoft
+package dev.redtronics.mokt.provider.microsoft
 
 import dev.redtronics.mokt.auth
 import io.kotest.core.spec.style.FunSpec

@@ -9,7 +9,7 @@
  * and/or sell copies of the Software.
  */
 
-package dev.redtronics.mokt.microsoft.server
+package dev.redtronics.mokt.provider.microsoft.server
 
 import dev.redtronics.mokt.network.defaultJson
 import io.ktor.serialization.kotlinx.json.*

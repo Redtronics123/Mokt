@@ -9,11 +9,11 @@
  * and/or sell copies of the Software.
  */
 
-package dev.redtronics.mokt.microsoft.server
+package dev.redtronics.mokt.provider.microsoft.server
 
-import dev.redtronics.mokt.microsoft.response.OAuthCode
-import dev.redtronics.mokt.microsoft.response.CodeError
-import dev.redtronics.mokt.microsoft.response.CodeErrorResponse
+import dev.redtronics.mokt.provider.microsoft.response.OAuthCode
+import dev.redtronics.mokt.provider.microsoft.response.CodeError
+import dev.redtronics.mokt.provider.microsoft.response.CodeErrorResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.html.*
