@@ -12,6 +12,10 @@
 package dev.redtronics.mokt.provider.microsoft
 
 import dev.redtronics.mokt.auth
+import dev.redtronics.mokt.provider.MSAuthMethod
+import dev.redtronics.mokt.provider.MSScopes
+import dev.redtronics.mokt.provider.MSTenant
+import dev.redtronics.mokt.provider.Microsoft
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.shouldBe

@@ -9,11 +9,11 @@
  * and/or sell copies of the Software.
  */
 
-package dev.redtronics.mokt.provider.microsoft.server
+package dev.redtronics.mokt.provider.server
 
-import dev.redtronics.mokt.provider.microsoft.response.OAuthCode
-import dev.redtronics.mokt.provider.microsoft.response.CodeError
-import dev.redtronics.mokt.provider.microsoft.response.CodeErrorResponse
+import dev.redtronics.mokt.provider.response.CodeError
+import dev.redtronics.mokt.provider.response.CodeErrorResponse
+import dev.redtronics.mokt.provider.response.OAuthCode
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.html.*
@@ -27,7 +27,7 @@ import kotlinx.html.HTML
  * @since 0.0.1
  * @author Nils Jäkel
  */
-internal fun Application.oauthRouting(
+internal fun Application.defaultGrantRouting(
     redirectPath: String,
     channel: Channel<OAuthCode>,
     successPage: HTML.() -> Unit,

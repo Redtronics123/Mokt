@@ -11,18 +11,18 @@
 
 @file:Suppress("MemberVisibilityCanBePrivate")
 
-package dev.redtronics.mokt.provider.microsoft.builder
+package dev.redtronics.mokt.provider.builder
 
 import dev.redtronics.mokt.MojangGameAuth
 import dev.redtronics.mokt.getEnv
-import dev.redtronics.mokt.provider.microsoft.Microsoft
+import dev.redtronics.mokt.provider.Microsoft
 import dev.redtronics.mokt.openInBrowser
-import dev.redtronics.mokt.provider.microsoft.html.failurePage
-import dev.redtronics.mokt.provider.microsoft.html.successPage
-import dev.redtronics.mokt.provider.microsoft.response.CodeErrorResponse
-import dev.redtronics.mokt.provider.microsoft.response.OAuthCode
-import dev.redtronics.mokt.provider.microsoft.server.oauthRouting
-import dev.redtronics.mokt.provider.microsoft.server.setup
+import dev.redtronics.mokt.provider.html.failurePage
+import dev.redtronics.mokt.provider.html.successPage
+import dev.redtronics.mokt.provider.response.CodeErrorResponse
+import dev.redtronics.mokt.provider.response.OAuthCode
+import dev.redtronics.mokt.provider.server.defaultGrantRouting
+import dev.redtronics.mokt.provider.server.setup
 import io.ktor.http.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
@@ -84,7 +84,7 @@ public class GrantFlowBuilder internal constructor(override val ms: Microsoft) :
 
         val authServer = embeddedServer(CIO, localRedirectUrl.port, localRedirectUrl.toString()) {
             setup()
-            oauthRouting(path, authCodeChannel, successRedirectPage, failureRedirectPage, onRequestError)
+            defaultGrantRouting(path, authCodeChannel, successRedirectPage, failureRedirectPage, onRequestError)
         }
         authServer.start()
 

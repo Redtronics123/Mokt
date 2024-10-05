@@ -11,14 +11,14 @@
 
 @file:Suppress("MemberVisibilityCanBePrivate")
 
-package dev.redtronics.mokt.provider.microsoft
+package dev.redtronics.mokt.provider
 
 import dev.redtronics.mokt.getEnv
 import dev.redtronics.mokt.Provider
-import dev.redtronics.mokt.provider.microsoft.builder.DeviceFlowBuilder
-import dev.redtronics.mokt.provider.microsoft.builder.GrantFlowBuilder
 import dev.redtronics.mokt.network.client
 import dev.redtronics.mokt.network.defaultJson
+import dev.redtronics.mokt.provider.builder.DeviceFlowBuilder
+import dev.redtronics.mokt.provider.builder.GrantFlowBuilder
 import io.ktor.client.*
 import io.ktor.http.*
 import kotlinx.serialization.json.Json

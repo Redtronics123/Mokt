@@ -11,10 +11,10 @@
 
 @file:Suppress("MemberVisibilityCanBePrivate")
 
-package dev.redtronics.mokt.provider.microsoft.builder
+package dev.redtronics.mokt.provider.builder
 
 import dev.redtronics.mokt.MojangGameAuth
-import dev.redtronics.mokt.provider.microsoft.Microsoft
+import dev.redtronics.mokt.provider.Microsoft
 import dev.redtronics.mokt.network.interval
 import dev.redtronics.mokt.openInBrowser
 import dev.redtronics.mokt.provider.microsoft.response.*

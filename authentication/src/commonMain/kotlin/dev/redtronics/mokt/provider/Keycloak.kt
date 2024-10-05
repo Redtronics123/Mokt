@@ -9,7 +9,7 @@
  * and/or sell copies of the Software.
  */
 
-package dev.redtronics.mokt.provider.keycloak
+package dev.redtronics.mokt.provider
 
 import dev.redtronics.mokt.Provider
 import dev.redtronics.mokt.network.client

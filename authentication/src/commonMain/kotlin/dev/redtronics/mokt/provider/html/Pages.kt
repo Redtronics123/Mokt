@@ -1,4 +1,4 @@
-package dev.redtronics.mokt.provider.microsoft.html
+package dev.redtronics.mokt.provider.html
 
 import kotlinx.html.HTML
 
