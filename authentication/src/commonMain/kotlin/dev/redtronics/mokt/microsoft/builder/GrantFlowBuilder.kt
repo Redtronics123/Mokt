@@ -30,7 +30,7 @@ import io.ktor.server.util.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.html.HTML
 
-public class MSGrantFlowBuilder internal constructor(override val ms: Microsoft) : MSAuth() {
+public class GrantFlowBuilder internal constructor(override val ms: Microsoft) : MSAuth() {
     /**
      * The local redirect URL. On default, it will try to get the url from the environment variable `LOCAL_REDIRECT_URL`.
      * Otherwise, the url `http://localhost:8080` will be used.

@@ -29,7 +29,7 @@ import kotlin.time.Duration.Companion.seconds
  * @since 0.0.1
  * @author Nils Jäkel
  * */
-public class MSDeviceFlowBuilder internal constructor(override val ms: Microsoft) : MSAuth() {
+public class DeviceFlowBuilder internal constructor(override val ms: Microsoft) : MSAuth() {
     /**
      * The URL to the Microsoft Device Code endpoint.
      *

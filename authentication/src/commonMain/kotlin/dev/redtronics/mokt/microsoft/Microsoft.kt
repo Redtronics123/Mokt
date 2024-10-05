@@ -15,8 +15,8 @@ package dev.redtronics.mokt.microsoft
 
 import dev.redtronics.mokt.getEnv
 import dev.redtronics.mokt.Provider
-import dev.redtronics.mokt.microsoft.builder.MSDeviceFlowBuilder
-import dev.redtronics.mokt.microsoft.builder.MSGrantFlowBuilder
+import dev.redtronics.mokt.microsoft.builder.DeviceFlowBuilder
+import dev.redtronics.mokt.microsoft.builder.GrantFlowBuilder
 import dev.redtronics.mokt.network.client
 import dev.redtronics.mokt.network.defaultJson
 import io.ktor.client.*
@@ -110,10 +110,10 @@ public class Microsoft @PublishedApi internal constructor() : Provider {
      * @since 0.0.1
      * @author Nils Jäkel
      * */
-    public suspend fun <T> defaultGrant(builder: suspend MSGrantFlowBuilder.() -> T): T {
+    public suspend fun <T> defaultGrant(builder: suspend GrantFlowBuilder.() -> T): T {
         authMethod = MSAuthMethod.OAUTH2
 
-        val oauthBuilder = MSGrantFlowBuilder(this)
+        val oauthBuilder = GrantFlowBuilder(this)
         return builder(oauthBuilder).apply { oauthBuilder.build() }
     }
 
@@ -126,10 +126,10 @@ public class Microsoft @PublishedApi internal constructor() : Provider {
      * @since 0.0.1
      * @author Nils Jäkel
      * */
-    public suspend fun <T> device(builder: suspend MSDeviceFlowBuilder.() -> T): T {
+    public suspend fun <T> device(builder: suspend DeviceFlowBuilder.() -> T): T {
         authMethod = MSAuthMethod.DEVICE_AUTH
 
-        val deviceAuthBuilder = MSDeviceFlowBuilder(this)
+        val deviceAuthBuilder = DeviceFlowBuilder(this)
         return builder(deviceAuthBuilder).apply { deviceAuthBuilder.build() }
     }
 }
