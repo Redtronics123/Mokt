@@ -17,7 +17,7 @@ import dev.redtronics.mokt.MojangGameAuth
 import dev.redtronics.mokt.provider.Microsoft
 import dev.redtronics.mokt.network.interval
 import dev.redtronics.mokt.openInBrowser
-import dev.redtronics.mokt.provider.microsoft.response.*
+import dev.redtronics.mokt.provider.response.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
