@@ -13,7 +13,7 @@
 
 package dev.redtronics.mokt.provider.microsoft.builder
 
-import dev.redtronics.mokt.provider.microsoft.MSAuth
+import dev.redtronics.mokt.MojangGameAuth
 import dev.redtronics.mokt.provider.microsoft.Microsoft
 import dev.redtronics.mokt.network.interval
 import dev.redtronics.mokt.openInBrowser
@@ -30,7 +30,7 @@ import kotlin.time.Duration.Companion.seconds
  * @since 0.0.1
  * @author Nils Jäkel
  * */
-public class DeviceFlowBuilder internal constructor(override val ms: Microsoft) : MSAuth() {
+public class DeviceFlowBuilder internal constructor(override val ms: Microsoft) : MojangGameAuth() {
     /**
      * The URL to the Microsoft Device Code endpoint.
      *

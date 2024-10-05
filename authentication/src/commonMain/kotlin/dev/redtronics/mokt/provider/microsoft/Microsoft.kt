@@ -134,12 +134,6 @@ public class Microsoft @PublishedApi internal constructor() : Provider {
     }
 }
 
-public abstract class MSAuth internal constructor() {
-    internal abstract val ms: Microsoft
-
-    internal abstract fun build()
-}
-
 /**
  * Defines the different authentication methods used by the Microsoft provider.
  *

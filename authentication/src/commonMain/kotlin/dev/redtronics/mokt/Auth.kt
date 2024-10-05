@@ -54,3 +54,7 @@ public suspend inline fun <reified T : Provider> auth(noinline builder: suspend 
     else -> { throw IllegalArgumentException("Provider ${T::class} is not supported") }
 }
 
+public abstract class MojangGameAuth internal constructor() {
+    internal abstract val ms: Microsoft
+    internal abstract fun build()
+}
