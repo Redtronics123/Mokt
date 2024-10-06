@@ -12,11 +12,13 @@
 package dev.redtronics.mokt
 
 import dev.redtronics.mokt.builder.XBoxBuilder
+import dev.redtronics.mokt.builder.XstsBuilder
 import dev.redtronics.mokt.provider.Authentik
 import dev.redtronics.mokt.provider.Keycloak
 import dev.redtronics.mokt.provider.Microsoft
 import dev.redtronics.mokt.provider.response.AccessResponse
 import dev.redtronics.mokt.response.XBoxResponse
+import dev.redtronics.mokt.response.XstsResponse
 import kotlin.reflect.KProperty
 
 /**
@@ -75,11 +77,16 @@ public abstract class MojangGameAuth internal constructor() {
         builder: suspend XBoxBuilder.() -> Unit = {}
     ): XBoxResponse? {
         val xBoxBuilder = XBoxBuilder(ms.httpClient, ms.json, accessResponse).apply { builder() }
-        return xBoxBuilder.token(onRequestError)
+        return xBoxBuilder.build(onRequestError)
     }
 
-    public suspend fun requestXstsTokenResponse() {
-
+    public suspend fun xsts(
+        xBoxResponse: XBoxResponse,
+        onRequestError: suspend () -> Unit = {},
+        builder: suspend XstsBuilder.() -> Unit = {}
+    ): XstsResponse? {
+        val xstsBuilder = XstsBuilder(ms.httpClient, ms.json, xBoxResponse).apply { builder() }
+        return xstsBuilder.build(onRequestError)
     }
 
     public suspend fun requestMojangAccessTokenResponse() {
