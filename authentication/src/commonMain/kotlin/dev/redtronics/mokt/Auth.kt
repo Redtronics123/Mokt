@@ -11,9 +11,12 @@
 
 package dev.redtronics.mokt
 
-import dev.redtronics.mokt.provider.authentik.Authentik
-import dev.redtronics.mokt.provider.keycloak.Keycloak
-import dev.redtronics.mokt.provider.microsoft.Microsoft
+import dev.redtronics.mokt.builder.XBoxBuilder
+import dev.redtronics.mokt.provider.Authentik
+import dev.redtronics.mokt.provider.Keycloak
+import dev.redtronics.mokt.provider.Microsoft
+import dev.redtronics.mokt.provider.response.AccessResponse
+import dev.redtronics.mokt.response.XBoxResponse
 import kotlin.reflect.KProperty
 
 /**
@@ -41,20 +44,47 @@ public class AuthProvider<in T : Provider> @PublishedApi internal constructor(pr
  * @since 0.0.1
  * @author Nils Jäkel
  */
-public suspend inline fun <reified T : Provider> auth(noinline builder: suspend T.() -> Unit): AuthProvider<T> = when (T::class) {
-    Microsoft::class -> {
-        val microsoft = Microsoft().apply { builder(this as T) }
-        if (microsoft.clientId == null) throw IllegalArgumentException("Client id is not set")
+public suspend inline fun <reified T : Provider> auth(noinline builder: suspend T.() -> Unit): AuthProvider<T> =
+    when (T::class) {
+        Microsoft::class -> {
+            val microsoft = Microsoft().apply { builder(this as T) }
+            if (microsoft.clientId == null) throw IllegalArgumentException("Client id is not set")
 
-        require(Regex("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}").matches(microsoft.clientId!!)) { "Client id is not valid" }
-        AuthProvider(microsoft)
+            require(Regex("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}").matches(microsoft.clientId!!)) { "Client id is not valid" }
+            AuthProvider(microsoft)
+        }
+
+        Authentik::class -> AuthProvider(Authentik().apply { builder(this as T) })
+        Keycloak::class -> AuthProvider(Keycloak().apply { builder(this as T) })
+        else -> {
+            throw IllegalArgumentException("Provider ${T::class} is not supported")
+        }
     }
-    Authentik::class -> AuthProvider(Authentik().apply { builder(this as T) })
-    Keycloak::class -> AuthProvider(Keycloak().apply { builder(this as T) })
-    else -> { throw IllegalArgumentException("Provider ${T::class} is not supported") }
-}
 
 public abstract class MojangGameAuth internal constructor() {
     internal abstract val ms: Microsoft
+    public abstract fun accessToken(): AccessResponse?
+
+    public suspend fun refreshAccessToken(): AccessResponse? {
+        return null
+    }
+
+    public suspend fun xBox(
+        accessResponse: AccessResponse,
+        onRequestError: suspend () -> Unit = {},
+        builder: suspend XBoxBuilder.() -> Unit = {}
+    ): XBoxResponse? {
+        val xBoxBuilder = XBoxBuilder(ms.httpClient, ms.json, accessResponse).apply { builder() }
+        return xBoxBuilder.token(onRequestError)
+    }
+
+    public suspend fun requestXstsTokenResponse() {
+
+    }
+
+    public suspend fun requestMojangAccessTokenResponse() {
+
+    }
+
     internal abstract fun build()
 }
