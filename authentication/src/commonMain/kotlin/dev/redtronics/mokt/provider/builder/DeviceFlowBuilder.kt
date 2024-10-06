@@ -115,7 +115,7 @@ public class DeviceFlowBuilder internal constructor(override val ms: Microsoft) 
      * @param displayMode The way how to display the authorization code to the user.
      * @param deviceCodeResponse The [DeviceCodeResponse] of the authorization code request.
      * @param onRequestError The function to be called if an error occurs during the access token request.
-     * @return The [DeviceAccessResponse] of the access token request or null if an error occurs.
+     * @return The [AccessResponse] of the access token request or null if an error occurs.
      *
      * @since 0.0.1
      * @author Nils Jäkel
@@ -124,7 +124,7 @@ public class DeviceFlowBuilder internal constructor(override val ms: Microsoft) 
         displayMode: DisplayMode,
         deviceCodeResponse: DeviceCodeResponse,
         onRequestError: suspend (err: DeviceAuthStateError) -> Unit = {}
-    ): DeviceAccessResponse? {
+    ): AccessResponse? {
         display(deviceCodeResponse)
         when (displayMode) {
             DisplayMode.BROWSER -> browser(deviceLoginEndpointUrl)
@@ -141,7 +141,7 @@ public class DeviceFlowBuilder internal constructor(override val ms: Microsoft) 
      * @param startTime The start time of the loop.
      * @param deviceCodeResponse The [DeviceCodeResponse] of the authorization code request.
      * @param onRequestError The function to be called if an error occurs during the access token request.
-     * @return The [DeviceAccessResponse] of the access token request or null if an error occurs.
+     * @return The [AccessResponse] of the access token request or null if an error occurs.
      *
      * @since 0.0.1
      * @author Nils Jäkel
@@ -172,7 +172,11 @@ public class DeviceFlowBuilder internal constructor(override val ms: Microsoft) 
             }
             return@interval null
         }
-        return@interval ms.json.decodeFromString(DeviceAccessResponse.serializer(), responseBody)
+        return@interval ms.json.decodeFromString(AccessResponse.serializer(), responseBody)
+    }
+
+    override fun accessToken(): AccessResponse? {
+        TODO("Not yet implemented")
     }
 
     override fun build() {
