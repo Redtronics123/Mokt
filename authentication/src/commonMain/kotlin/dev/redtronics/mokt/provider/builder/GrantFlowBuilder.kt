@@ -19,6 +19,7 @@ import dev.redtronics.mokt.provider.Microsoft
 import dev.redtronics.mokt.openInBrowser
 import dev.redtronics.mokt.provider.html.failurePage
 import dev.redtronics.mokt.provider.html.successPage
+import dev.redtronics.mokt.provider.response.AccessResponse
 import dev.redtronics.mokt.provider.response.CodeErrorResponse
 import dev.redtronics.mokt.provider.response.OAuthCode
 import dev.redtronics.mokt.provider.server.defaultGrantRouting
@@ -99,6 +100,10 @@ public class GrantFlowBuilder internal constructor(override val ms: Microsoft) :
         browser(Url(msEndpointUrl))
 
         return authCodeChannel.receive()
+    }
+
+    override fun accessToken(): AccessResponse? {
+        TODO("Not yet implemented")
     }
 
     override fun build() {
