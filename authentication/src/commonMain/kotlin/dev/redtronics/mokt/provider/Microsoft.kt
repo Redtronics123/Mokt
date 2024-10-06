@@ -70,7 +70,7 @@ public class Microsoft @PublishedApi internal constructor() : Provider {
      * @since 0.0.1
      * @author Nils Jäkel
      * */
-    public var tenant: MSTenant = MSTenant.COMMON
+    public var tenant: MSTenant = MSTenant.CONSUMERS
 
     /**
      * The scopes of the Microsoft provider.
