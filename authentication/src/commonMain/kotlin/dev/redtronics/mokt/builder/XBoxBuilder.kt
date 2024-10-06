@@ -31,10 +31,10 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
 
 public class XBoxBuilder internal constructor(
-    private val httpClient: HttpClient,
-    private val json: Json,
+    override val httpClient: HttpClient,
+    override val json: Json,
     private val accessResponse: AccessResponse
-) {
+) : BaseBuilder() {
     public val relyingPartyUrl: Url
         get() = Url("http://auth.xboxlive.com")
 
@@ -49,7 +49,7 @@ public class XBoxBuilder internal constructor(
     public val rpsTicket: String
         get() = "d=${accessResponse.accessToken}"
 
-    internal suspend fun token(onRequestError: suspend () -> Unit): XBoxResponse? {
+    internal suspend fun build(onRequestError: suspend () -> Unit): XBoxResponse? {
         val payload = XBoxPayload(
             properties = XBoxProperties(
                 xAuthMethod = xAuthMethod,
