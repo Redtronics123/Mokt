@@ -24,15 +24,6 @@ public data class XBoxResponse(
     @SerialName("Token")
     public val token: String,
     @SerialName("DisplayClaims")
-    public val displayClaims: XBoxDisplayClaims
+    public val displayClaims: DisplayClaims
 )
 
-@Serializable
-public data class XBoxDisplayClaims(
-    public val xui: List<XBoxUhs>
-)
-
-@Serializable
-public data class XBoxUhs(
-    public val uhs: String
-)
