@@ -49,7 +49,7 @@ public class XBoxBuilder internal constructor(
     public val rpsTicket: String
         get() = "d=${accessResponse.accessToken}"
 
-    internal suspend fun build(onRequestError: suspend () -> Unit): XBoxResponse? {
+    internal suspend fun build(onRequestError: suspend (response: HttpResponse) -> Unit): XBoxResponse? {
         val payload = XBoxPayload(
             properties = XBoxProperties(
                 xAuthMethod = xAuthMethod,
@@ -67,7 +67,7 @@ public class XBoxBuilder internal constructor(
         }
 
         if (!response.status.isSuccess()) {
-            onRequestError()
+            onRequestError(response)
             return null
         }
 
