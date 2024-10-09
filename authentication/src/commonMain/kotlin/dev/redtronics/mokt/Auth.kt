@@ -11,12 +11,14 @@
 
 package dev.redtronics.mokt
 
+import dev.redtronics.mokt.builder.MojangBuilder
 import dev.redtronics.mokt.builder.XBoxBuilder
 import dev.redtronics.mokt.builder.XstsBuilder
 import dev.redtronics.mokt.provider.Authentik
 import dev.redtronics.mokt.provider.Keycloak
 import dev.redtronics.mokt.provider.Microsoft
 import dev.redtronics.mokt.provider.response.AccessResponse
+import dev.redtronics.mokt.response.MojangResponse
 import dev.redtronics.mokt.response.XBoxResponse
 import dev.redtronics.mokt.response.XstsResponse
 import io.ktor.client.statement.*
@@ -86,8 +88,13 @@ public abstract class MojangGameAuth internal constructor() {
         return xstsBuilder.build(onRequestError)
     }
 
-    public suspend fun mojang(xstsResponse: XstsResponse) {
-
+    public suspend fun mojang(
+        xstsResponse: XstsResponse,
+        onRequestError: suspend (response: HttpResponse) -> Unit = {},
+        builder: suspend MojangBuilder.() -> Unit = {}
+    ): MojangResponse? {
+        val mojangBuilder = MojangBuilder(ms.httpClient, ms.json, xstsResponse).apply { builder() }
+        return mojangBuilder.build(onRequestError)
     }
 
     internal abstract fun build()
