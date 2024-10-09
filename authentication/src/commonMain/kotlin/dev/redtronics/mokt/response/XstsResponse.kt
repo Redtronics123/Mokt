@@ -13,7 +13,9 @@ package dev.redtronics.mokt.response
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 public data class XstsResponse(
     @SerialName("IssueInstant")
     public val issueInstant: Instant,
