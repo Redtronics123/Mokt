@@ -28,14 +28,15 @@ public class XstsBuilder internal constructor(
     override val json: Json,
     private val xBoxResponse: XBoxResponse
 ) : BaseBuilder() {
-    public var sandboxId: String = "RETAIL"
+    public val sandboxId: String
+        get() = "RETAIL"
 
-    public var relyingParty: String = "rp://api.minecraftservices.com"
+    public var relyingParty: String = "rp://api.minecraftservices.com/"
 
     public val authUrl: Url
         get() = Url("https://xsts.auth.xboxlive.com/xsts/authorize")
 
-    internal suspend fun build(onRequestError: suspend () -> Unit): XstsResponse?  {
+    internal suspend fun build(onRequestError: suspend (response: HttpResponse) -> Unit): XstsResponse?  {
         val xstsPayload = XstsPayload(
             properties = XstsProperties(
                 sandboxId = sandboxId,
@@ -52,7 +53,7 @@ public class XstsBuilder internal constructor(
         }
 
         if (!response.status.isSuccess()) {
-            onRequestError()
+            onRequestError(response)
             return null
         }
 
