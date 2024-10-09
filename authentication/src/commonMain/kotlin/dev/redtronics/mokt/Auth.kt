@@ -9,6 +9,8 @@
  * and/or sell copies of the Software.
  */
 
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package dev.redtronics.mokt
 
 import dev.redtronics.mokt.builder.MojangBuilder
@@ -66,8 +68,8 @@ public suspend inline fun <reified T : Provider> auth(noinline builder: suspend 
         }
     }
 
-public abstract class MojangGameAuth internal constructor() {
-    internal abstract val ms: Microsoft
+public abstract class MojangGameAuth<out T : Provider> internal constructor() {
+    internal abstract val provider: T
     public abstract fun accessToken(): AccessResponse?
 
     public suspend fun xBox(
@@ -75,7 +77,7 @@ public abstract class MojangGameAuth internal constructor() {
         onRequestError: suspend (response: HttpResponse) -> Unit = {},
         builder: suspend XBoxBuilder.() -> Unit = {}
     ): XBoxResponse? {
-        val xBoxBuilder = XBoxBuilder(ms.httpClient, ms.json, accessResponse).apply { builder() }
+        val xBoxBuilder = XBoxBuilder(provider.httpClient, provider.json, accessResponse).apply { builder() }
         return xBoxBuilder.build(onRequestError)
     }
 
@@ -84,8 +86,19 @@ public abstract class MojangGameAuth internal constructor() {
         onRequestError: suspend (response: HttpResponse) -> Unit = {},
         builder: suspend XstsBuilder.() -> Unit = {}
     ): XstsResponse? {
-        val xstsBuilder = XstsBuilder(ms.httpClient, ms.json, xBoxResponse).apply { builder() }
+        val xstsBuilder = XstsBuilder(provider.httpClient, provider.json, xBoxResponse).apply { builder() }
         return xstsBuilder.build(onRequestError)
+    }
+
+    public suspend fun xsts(
+        xBoxResponse: XBoxResponse,
+        relyingParty: String = "rp://api.minecraftservices.com/",
+        onRequestError: suspend (response: HttpResponse) -> Unit = {}
+    ): XstsResponse? {
+        val xsts = xsts(xBoxResponse, onRequestError) {
+            this.relyingParty = relyingParty
+        }
+        return xsts
     }
 
     public suspend fun mojang(
@@ -93,7 +106,7 @@ public abstract class MojangGameAuth internal constructor() {
         onRequestError: suspend (response: HttpResponse) -> Unit = {},
         builder: suspend MojangBuilder.() -> Unit = {}
     ): MojangResponse? {
-        val mojangBuilder = MojangBuilder(ms.httpClient, ms.json, xstsResponse).apply { builder() }
+        val mojangBuilder = MojangBuilder(provider.httpClient, provider.json, xstsResponse).apply { builder() }
         return mojangBuilder.build(onRequestError)
     }
 
