@@ -19,6 +19,7 @@ import dev.redtronics.mokt.provider.Microsoft
 import dev.redtronics.mokt.provider.response.AccessResponse
 import dev.redtronics.mokt.response.XBoxResponse
 import dev.redtronics.mokt.response.XstsResponse
+import io.ktor.client.statement.*
 import kotlin.reflect.KProperty
 
 /**
@@ -67,13 +68,9 @@ public abstract class MojangGameAuth internal constructor() {
     internal abstract val ms: Microsoft
     public abstract fun accessToken(): AccessResponse?
 
-    public suspend fun refreshAccessToken(): AccessResponse? {
-        return null
-    }
-
     public suspend fun xBox(
         accessResponse: AccessResponse,
-        onRequestError: suspend () -> Unit = {},
+        onRequestError: suspend (response: HttpResponse) -> Unit = {},
         builder: suspend XBoxBuilder.() -> Unit = {}
     ): XBoxResponse? {
         val xBoxBuilder = XBoxBuilder(ms.httpClient, ms.json, accessResponse).apply { builder() }
@@ -82,14 +79,14 @@ public abstract class MojangGameAuth internal constructor() {
 
     public suspend fun xsts(
         xBoxResponse: XBoxResponse,
-        onRequestError: suspend () -> Unit = {},
+        onRequestError: suspend (response: HttpResponse) -> Unit = {},
         builder: suspend XstsBuilder.() -> Unit = {}
     ): XstsResponse? {
         val xstsBuilder = XstsBuilder(ms.httpClient, ms.json, xBoxResponse).apply { builder() }
         return xstsBuilder.build(onRequestError)
     }
 
-    public suspend fun requestMojangAccessTokenResponse() {
+    public suspend fun mojang(xstsResponse: XstsResponse) {
 
     }
 
