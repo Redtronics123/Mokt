@@ -12,7 +12,9 @@
 package dev.redtronics.mokt.response
 
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 public data class MojangResponse(
     public val username: String,
     public val roles: List<String>,
