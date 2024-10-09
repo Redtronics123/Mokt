@@ -31,7 +31,7 @@ import io.ktor.server.util.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.html.HTML
 
-public class GrantFlowBuilder internal constructor(override val ms: Microsoft) : MojangGameAuth() {
+public class GrantFlowBuilder internal constructor(override val provider: Microsoft) : MojangGameAuth<Microsoft>() {
     /**
      * The local redirect URL. On default, it will try to get the url from the environment variable `LOCAL_REDIRECT_URL`.
      * Otherwise, the url `http://localhost:8080` will be used.
@@ -42,7 +42,7 @@ public class GrantFlowBuilder internal constructor(override val ms: Microsoft) :
     public var localRedirectUrl: Url = Url(getEnv("LOCAL_REDIRECT_URL") ?: "http://localhost:8080")
 
     public val authorizeEndpointUrl: Url
-        get() = Url("https://login.microsoftonline.com/${ms.tenant.value}/oauth2/v2.0/authorize")
+        get() = Url("https://login.microsoftonline.com/${provider.tenant.value}/oauth2/v2.0/authorize")
 
 
     public var responseType: ResponseType = ResponseType.CODE
@@ -89,7 +89,7 @@ public class GrantFlowBuilder internal constructor(override val ms: Microsoft) :
         }
         authServer.start()
 
-        val msEndpointUrl = url {
+        val providerEndpointUrl = url {
             protocol = URLProtocol.HTTPS
             host = authorizeEndpointUrl.host
             parameters {
@@ -97,7 +97,7 @@ public class GrantFlowBuilder internal constructor(override val ms: Microsoft) :
             }
         }
 
-        browser(Url(msEndpointUrl))
+        browser(Url(providerEndpointUrl))
 
         return authCodeChannel.receive()
     }

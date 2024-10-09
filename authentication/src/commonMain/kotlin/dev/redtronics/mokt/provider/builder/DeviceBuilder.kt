@@ -30,7 +30,7 @@ import kotlin.time.Duration.Companion.seconds
  * @since 0.0.1
  * @author Nils Jäkel
  * */
-public class DeviceFlowBuilder internal constructor(override val ms: Microsoft) : MojangGameAuth() {
+public class DeviceFlowBuilder internal constructor(override val provider: Microsoft) : MojangGameAuth<Microsoft>() {
     /**
      * The URL to the Microsoft Device Code endpoint.
      *
@@ -38,7 +38,7 @@ public class DeviceFlowBuilder internal constructor(override val ms: Microsoft) 
      * @author Nils Jäkel
      */
     public val deviceCodeEndpointUrl: Url
-        get() = Url("https://login.microsoftonline.com/${ms.tenant.value}/oauth2/v2.0/devicecode")
+        get() = Url("https://login.microsoftonline.com/${provider.tenant.value}/oauth2/v2.0/devicecode")
 
     /**
      * The URL to the Microsoft Device Login endpoint.
@@ -95,18 +95,18 @@ public class DeviceFlowBuilder internal constructor(override val ms: Microsoft) 
     public suspend fun requestAuthorizationCode(
         onRequestError: suspend (err: CodeErrorResponse) -> Unit = {}
     ): DeviceCodeResponse? {
-        val response = ms.httpClient.submitForm(
+        val response = provider.httpClient.submitForm(
             url = deviceCodeEndpointUrl.toString(),
             formParameters = parameters {
-                append("client_id", ms.clientId!!)
-                append("scope", ms.scopes.joinToString(" ") { it.value })
+                append("client_id", provider.clientId!!)
+                append("scope", provider.scopes.joinToString(" ") { it.value })
             }
         )
         if (!response.status.isSuccess()) {
-            onRequestError(ms.json.decodeFromString(CodeErrorResponse.serializer(), response.bodyAsText()))
+            onRequestError(provider.json.decodeFromString(CodeErrorResponse.serializer(), response.bodyAsText()))
             return null
         }
-        return ms.json.decodeFromString(DeviceCodeResponse.serializer(), response.bodyAsText())
+        return provider.json.decodeFromString(DeviceCodeResponse.serializer(), response.bodyAsText())
     }
 
     /**
@@ -154,10 +154,10 @@ public class DeviceFlowBuilder internal constructor(override val ms: Microsoft) 
         interval = deviceCodeResponse.interval.seconds,
         cond = { getTimeMillis() - startTime < deviceCodeResponse.expiresIn * 1000 },
     ) {
-        val response = ms.httpClient.submitForm(
-            url = ms.tokenEndpointUrl.toString(),
+        val response = provider.httpClient.submitForm(
+            url = provider.tokenEndpointUrl.toString(),
             formParameters = parameters {
-                append("client_id", ms.clientId!!)
+                append("client_id", provider.clientId!!)
                 append("device_code", deviceCodeResponse.deviceCode)
                 append("grant_type", grantType)
             }
@@ -165,14 +165,14 @@ public class DeviceFlowBuilder internal constructor(override val ms: Microsoft) 
 
         val responseBody = response.bodyAsText()
         if (responseBody.contains("error")) {
-            val errorResponse = ms.json.decodeFromString(DeviceAuthStateError.serializer(), responseBody)
+            val errorResponse = provider.json.decodeFromString(DeviceAuthStateError.serializer(), responseBody)
             if (errorResponse.error != DeviceAuthStateErrorItem.AUTHORIZATION_PENDING) {
                 onRequestError(errorResponse)
                 cancel()
             }
             return@interval null
         }
-        return@interval ms.json.decodeFromString(AccessResponse.serializer(), responseBody)
+        return@interval provider.json.decodeFromString(AccessResponse.serializer(), responseBody)
     }
 
     override fun accessToken(): AccessResponse? {
