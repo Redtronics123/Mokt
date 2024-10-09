@@ -84,7 +84,7 @@ public abstract class MojangGameAuth<out T : Provider> internal constructor() {
     public suspend fun xsts(
         xBoxResponse: XBoxResponse,
         onRequestError: suspend (response: HttpResponse) -> Unit = {},
-        builder: suspend XstsBuilder.() -> Unit = {}
+        builder: suspend XstsBuilder.() -> Unit
     ): XstsResponse? {
         val xstsBuilder = XstsBuilder(provider.httpClient, provider.json, xBoxResponse).apply { builder() }
         return xstsBuilder.build(onRequestError)
@@ -92,8 +92,8 @@ public abstract class MojangGameAuth<out T : Provider> internal constructor() {
 
     public suspend fun xsts(
         xBoxResponse: XBoxResponse,
-        relyingParty: String = "rp://api.minecraftservices.com/",
-        onRequestError: suspend (response: HttpResponse) -> Unit = {}
+        onRequestError: suspend (response: HttpResponse) -> Unit = {},
+        relyingParty: String = "rp://api.minecraftservices.com/"
     ): XstsResponse? {
         val xsts = xsts(xBoxResponse, onRequestError) {
             this.relyingParty = relyingParty
