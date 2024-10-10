@@ -16,7 +16,6 @@ package dev.redtronics.mokt.provider.builder
 import dev.redtronics.mokt.MojangGameAuth
 import dev.redtronics.mokt.provider.Microsoft
 import dev.redtronics.mokt.network.interval
-import dev.redtronics.mokt.openInBrowser
 import dev.redtronics.mokt.provider.response.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
@@ -55,7 +54,8 @@ public class DeviceFlowBuilder internal constructor(override val provider: Micro
      * @since 0.0.1
      * @author Nils Jäkel
      * */
-    public var grantType: String = "urn:ietf:params:oauth:grant-type:device_code"
+    public val grantType: String
+        get() = "urn:ietf:params:oauth:grant-type:device_code"
 
     /**
      * The way how to display the authorization code to the user.
@@ -63,25 +63,7 @@ public class DeviceFlowBuilder internal constructor(override val provider: Micro
      * @since 0.0.1
      * @author Nils Jäkel
      * */
-    public var display: suspend (deviceCodeResponse: DeviceCodeResponse) -> Unit = {}
-
-    /**
-     * Opens the browser to display the Microsoft Device Code Page.
-     * Only if the [DisplayMode.BROWSER] is set.
-     *
-     * @since 0.0.1
-     * @author Nils Jäkel
-     * */
-    public var browser: suspend (url: Url) -> Unit = { url -> openInBrowser(url) }
-
-    /**
-     * Used the terminal to display the auth information to the user.
-     * Only if the [DisplayMode.TERMINAL] is set.
-     *
-     * @since 0.0.1
-     * @author Nils Jäkel
-     * */
-    public var terminal: suspend () -> Unit = {}
+    public var authPhase: suspend (userCode: String, url: Url) -> Unit = { _: String, _: Url -> }
 
     /**
      * Requests an authorization code from the Microsoft Device Code endpoint.
@@ -112,7 +94,6 @@ public class DeviceFlowBuilder internal constructor(override val provider: Micro
     /**
      * Requests an access token from the Microsoft Device Login endpoint.
      *
-     * @param displayMode The way how to display the authorization code to the user.
      * @param deviceCodeResponse The [DeviceCodeResponse] of the authorization code request.
      * @param onRequestError The function to be called if an error occurs during the access token request.
      * @return The [AccessResponse] of the access token request or null if an error occurs.
@@ -121,15 +102,10 @@ public class DeviceFlowBuilder internal constructor(override val provider: Micro
      * @author Nils Jäkel
      * */
     public suspend fun requestAccessToken(
-        displayMode: DisplayMode,
         deviceCodeResponse: DeviceCodeResponse,
         onRequestError: suspend (err: DeviceAuthStateError) -> Unit = {}
     ): AccessResponse? {
-        display(deviceCodeResponse)
-        when (displayMode) {
-            DisplayMode.BROWSER -> browser(deviceLoginEndpointUrl)
-            DisplayMode.TERMINAL -> terminal()
-        }
+        authPhase(deviceCodeResponse.userCode, deviceLoginEndpointUrl)
 
         val startTime = getTimeMillis()
         return authLoop(startTime, deviceCodeResponse, onRequestError)
@@ -182,15 +158,4 @@ public class DeviceFlowBuilder internal constructor(override val provider: Micro
     override fun build() {
 
     }
-}
-
-/**
- * The way how to display the authorization code to the user.
- *
- * @since 0.0.1
- * @author Nils Jäkel
- * */
-public enum class DisplayMode {
-    BROWSER,
-    TERMINAL;
 }
