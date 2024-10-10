@@ -68,9 +68,10 @@ public suspend inline fun <reified T : Provider> auth(noinline builder: suspend 
         }
     }
 
-public abstract class MojangGameAuth<out T : Provider> internal constructor() {
+public abstract class MojangGameAuth<out T : Provider> {
     internal abstract val provider: T
     public abstract fun accessToken(): AccessResponse?
+    internal abstract fun build()
 
     public suspend fun xBox(
         accessResponse: AccessResponse,
@@ -109,6 +110,4 @@ public abstract class MojangGameAuth<out T : Provider> internal constructor() {
         val mojangBuilder = MojangBuilder(provider.httpClient, provider.json, xstsResponse).apply { builder() }
         return mojangBuilder.build(onRequestError)
     }
-
-    internal abstract fun build()
 }
