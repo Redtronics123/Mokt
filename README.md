@@ -1,4 +1,5 @@
-# Mokt
+<img src="assets/mokt_full_alpha.png" alt="Mokt Logo" width="500px" height="150"/>
+
 Hey, welcome to Mokt!
 A Kotlin Multiplatform SDK for interaction with the Minecraft World.
 
