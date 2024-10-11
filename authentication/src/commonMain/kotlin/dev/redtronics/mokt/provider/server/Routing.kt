@@ -54,3 +54,17 @@ internal fun Application.defaultGrantRouting(
         }
     }
 }
+
+internal fun Application.displayCodeRouting(
+    userCode: String,
+    displayPath: String,
+    userCodePage: HTML.(userCode: String) -> Unit
+) {
+    routing {
+        get(displayPath) {
+            call.respondHtml(HttpStatusCode.OK) {
+                userCodePage(userCode)
+            }
+        }
+    }
+}
