@@ -16,11 +16,17 @@ package dev.redtronics.mokt.provider.builder
 import dev.redtronics.mokt.MojangGameAuth
 import dev.redtronics.mokt.provider.Microsoft
 import dev.redtronics.mokt.network.interval
+import dev.redtronics.mokt.openInBrowser
+import dev.redtronics.mokt.provider.html.userCodePage
 import dev.redtronics.mokt.provider.response.*
+import dev.redtronics.mokt.provider.server.displayCodeRouting
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.server.cio.*
+import io.ktor.server.engine.*
 import io.ktor.util.date.*
+import kotlinx.html.HTML
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -29,7 +35,9 @@ import kotlin.time.Duration.Companion.seconds
  * @since 0.0.1
  * @author Nils Jäkel
  * */
-public class DeviceFlowBuilder internal constructor(override val provider: Microsoft) : MojangGameAuth<Microsoft>() {
+public class DeviceBuilder internal constructor(override val provider: Microsoft) : MojangGameAuth<Microsoft>() {
+    private var codeServer: CIOApplicationEngine? = null
+
     /**
      * The URL to the Microsoft Device Code endpoint.
      *
@@ -57,13 +65,27 @@ public class DeviceFlowBuilder internal constructor(override val provider: Micro
     public val grantType: String
         get() = "urn:ietf:params:oauth:grant-type:device_code"
 
-    /**
-     * The way how to display the authorization code to the user.
-     *
-     * @since 0.0.1
-     * @author Nils Jäkel
-     * */
-    public var authPhase: suspend (userCode: String, url: Url) -> Unit = { _: String, _: Url -> }
+
+    public var displayServerForceHttps: Boolean = false
+
+    public var displayServerUrl: Url = Url("http://localhost:18769/usercode")
+
+    public var displayServerCodePage: HTML.(userCode: String) -> Unit = { userCode -> userCodePage(userCode) }
+
+    public var display: suspend (userCode: String, url: Url) -> Unit = { userCode, url ->
+        displayUserCodeInBrowser(userCode)
+        openInBrowser(url)
+    }
+
+    public suspend fun displayUserCodeInBrowser(userCode: String) {
+        codeServer = embeddedServer(CIO, displayServerUrl.port, displayServerUrl.host) {
+            val path = displayServerUrl.fullPath.ifBlank { "/" }
+            displayCodeRouting(userCode, path, displayServerCodePage)
+        }
+
+        codeServer!!.start()
+        openInBrowser(displayServerUrl)
+    }
 
     /**
      * Requests an authorization code from the Microsoft Device Code endpoint.
@@ -75,7 +97,7 @@ public class DeviceFlowBuilder internal constructor(override val provider: Micro
      * @author Nils Jäkel
      * */
     public suspend fun requestAuthorizationCode(
-        onRequestError: suspend (err: CodeErrorResponse) -> Unit = {}
+        onRequestError: suspend (err: CodeErrorResponse) -> Unit = {},
     ): DeviceCodeResponse? {
         val response = provider.httpClient.submitForm(
             url = deviceCodeEndpointUrl.toString(),
@@ -103,9 +125,9 @@ public class DeviceFlowBuilder internal constructor(override val provider: Micro
      * */
     public suspend fun requestAccessToken(
         deviceCodeResponse: DeviceCodeResponse,
-        onRequestError: suspend (err: DeviceAuthStateError) -> Unit = {}
+        onRequestError: suspend (err: DeviceAuthStateError) -> Unit = {},
     ): AccessResponse? {
-        authPhase(deviceCodeResponse.userCode, deviceLoginEndpointUrl)
+        display(deviceCodeResponse.userCode, deviceLoginEndpointUrl)
 
         val startTime = getTimeMillis()
         return authLoop(startTime, deviceCodeResponse, onRequestError)
@@ -125,10 +147,10 @@ public class DeviceFlowBuilder internal constructor(override val provider: Micro
     private suspend fun authLoop(
         startTime: Long,
         deviceCodeResponse: DeviceCodeResponse,
-        onRequestError: suspend (err: DeviceAuthStateError) -> Unit
+        onRequestError: suspend (err: DeviceAuthStateError) -> Unit,
     ) = interval(
         interval = deviceCodeResponse.interval.seconds,
-        cond = { getTimeMillis() - startTime < deviceCodeResponse.expiresIn * 1000 },
+        cond = { getTimeMillis() - startTime < deviceCodeResponse.expiresIn * 1000 }
     ) {
         val response = provider.httpClient.submitForm(
             url = provider.tokenEndpointUrl.toString(),
@@ -148,6 +170,8 @@ public class DeviceFlowBuilder internal constructor(override val provider: Micro
             }
             return@interval null
         }
+
+        codeServer!!.stop()
         return@interval provider.json.decodeFromString(AccessResponse.serializer(), responseBody)
     }
 
@@ -156,6 +180,6 @@ public class DeviceFlowBuilder internal constructor(override val provider: Micro
     }
 
     override fun build() {
-
+        if (displayServerForceHttps && !displayServerUrl.protocol.isSecure()) throw IllegalArgumentException("Display server URL is not using HTTPS")
     }
 }
