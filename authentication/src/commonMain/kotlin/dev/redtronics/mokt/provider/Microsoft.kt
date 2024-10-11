@@ -17,7 +17,7 @@ import dev.redtronics.mokt.getEnv
 import dev.redtronics.mokt.Provider
 import dev.redtronics.mokt.network.client
 import dev.redtronics.mokt.network.defaultJson
-import dev.redtronics.mokt.provider.builder.DeviceFlowBuilder
+import dev.redtronics.mokt.provider.builder.DeviceBuilder
 import dev.redtronics.mokt.provider.builder.GrantFlowBuilder
 import io.ktor.client.*
 import io.ktor.http.*
@@ -126,10 +126,10 @@ public class Microsoft @PublishedApi internal constructor() : Provider {
      * @since 0.0.1
      * @author Nils Jäkel
      * */
-    public suspend fun <T> device(builder: suspend DeviceFlowBuilder.() -> T): T {
+    public suspend fun <T> device(builder: suspend DeviceBuilder.() -> T): T {
         authMethod = MSAuthMethod.DEVICE_AUTH
 
-        val deviceAuthBuilder = DeviceFlowBuilder(this)
+        val deviceAuthBuilder = DeviceBuilder(this)
         return builder(deviceAuthBuilder).apply { deviceAuthBuilder.build() }
     }
 }
@@ -177,7 +177,7 @@ public enum class MSAuthMethod(public val authMethodName: String) {
  * @since 0.0.1
  * @author Nils Jäkel
  */
-public enum class MSTenant(public val value: String)  {
+public enum class MSTenant(public val value: String) {
     CONSUMERS("consumers"),
     ORGANIZATIONS("organizations"),
     COMMON("common");
