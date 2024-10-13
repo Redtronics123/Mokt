@@ -1,10 +1,10 @@
 [versions]
-kotlin = "2.0.20"
+kotlin = "2.0.21"
 idea-ext = "1.1.8"
 dokka = "1.9.20"
 android = "8.5.2"
 coroutines = "1.9.0"
-ktor = "2.3.12"
+ktor = "3.0.0"
 kotest = "6.0.0.M1"
 serialization = "1.7.3"
 android-browser = "1.8.0"
