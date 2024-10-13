@@ -13,12 +13,86 @@ package dev.redtronics.mokt.provider.html
 
 import kotlinx.html.*
 
-public fun HTML.userCodePage(userCode: String) {
+// TODO Resolve Urls from build constants
+public fun HTML.userCodePage(userCode: String, theme: DisplayServerTheme) {
     head {
         title("Device Code")
     }
 
     body {
-        +userCode
+        div("card") {
+            img(
+                alt = "Mokt full logo",
+                src = "https://code.redtronics.dev/nils.jaekel/mokt/-/raw/master/assets/mokt_m_alpha.png?ref_type=heads",
+                classes = "mokt"
+            )
+            div("code") {
+                p { text("Enter the code below in your browser") }
+                h1 { text(userCode) }
+            }
+        }
+
+        div("credits") {
+            p { text("Created with Mokt") }
+        }
+
+        style {
+            // language=CSS
+            +"""
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                
+                body {
+                    background-image: url(https://code.redtronics.dev/nils.jaekel/mokt/-/raw/feat/grant-auth/assets/background.png);
+                    background-position: center;
+                    background-size: cover;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                }
+                
+                .card {
+                    display: flex;
+                    width: 390px;
+                    height: 450px;
+                    align-items: center;
+                    justify-content: center;
+                    flex-direction: column;
+                    padding: 20px;
+                    background-color: ${if (theme == DisplayServerTheme.LIGHT) "#ffffff" else "#2d2d2d"};
+                }
+                
+                .card img {
+                    width: 30%;
+                    height: 30%;
+                    margin-bottom: 34px;
+                }
+                
+                .code {
+                    display: flex;
+                    flex-direction: column;
+                    width: 100%;
+                    padding: 12px;
+                    text-align: center;
+                    color: ${if (theme == DisplayServerTheme.LIGHT) "#000000" else "#ffffff"}
+                }
+                
+                .credits {
+                    position: absolute;
+                    bottom: 50px;
+                    color: #ffffff;
+                    font-size: 15px;
+                }
+            """.trimIndent()
+        }
     }
+}
+
+public enum class DisplayServerTheme {
+    LIGHT,
+    DARK;
 }
