@@ -21,7 +21,6 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.cio.*
-import io.ktor.server.engine.*
 import io.ktor.util.date.*
 import kotlin.time.Duration.Companion.seconds
 
@@ -42,15 +41,6 @@ public class DeviceBuilder internal constructor(override val provider: Microsoft
      */
     public val deviceCodeEndpointUrl: Url
         get() = Url("https://login.microsoftonline.com/${provider.tenant.value}/oauth2/v2.0/devicecode")
-
-    /**
-     * The URL to the Microsoft Device Login endpoint.
-     *
-     * @since 0.0.1
-     * @author Nils Jäkel
-     */
-    public val deviceLoginEndpointUrl: Url
-        get() = Url("https://www.microsoft.com/link")
 
     /**
      * The grant type of the Microsoft Device Code endpoint.
@@ -104,14 +94,11 @@ public class DeviceBuilder internal constructor(override val provider: Microsoft
      * @author Nils Jäkel
      * */
     public suspend fun requestAccessToken(
-//        deviceCodeResponse: DeviceCodeResponse,
-        onRequestError: suspend (err: DeviceAuthStateError) -> Unit = {},
+        deviceCodeResponse: DeviceCodeResponse,
+        onRequestError: suspend (err: DeviceAuthStateError) -> Unit = {}
     ): AccessResponse? {
-        display("122234", deviceLoginEndpointUrl)
-
         val startTime = getTimeMillis()
-        return null
-//        return authLoop(startTime, deviceCodeResponse, onRequestError)
+        return authLoop(startTime, deviceCodeResponse, onRequestError)
     }
 
     /**
@@ -128,7 +115,7 @@ public class DeviceBuilder internal constructor(override val provider: Microsoft
     private suspend fun authLoop(
         startTime: Long,
         deviceCodeResponse: DeviceCodeResponse,
-        onRequestError: suspend (err: DeviceAuthStateError) -> Unit,
+        onRequestError: suspend (err: DeviceAuthStateError) -> Unit
     ) = interval(
         interval = deviceCodeResponse.interval.seconds,
         cond = { getTimeMillis() - startTime < deviceCodeResponse.expiresIn * 1000 }
@@ -152,7 +139,7 @@ public class DeviceBuilder internal constructor(override val provider: Microsoft
             return@interval null
         }
 
-        codeServer!!.stop()
+        codeServer?.stop()
         return@interval provider.json.decodeFromString(AccessResponse.serializer(), responseBody)
     }
 }
