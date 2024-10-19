@@ -10,6 +10,7 @@ serialization = "1.7.3"
 android-browser = "1.8.0"
 datetime = "0.6.1"
 mordant = "3.0.0"
+slf4j = "2.0.16"
 
 [libraries]
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -42,6 +43,8 @@ kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest"
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+
 mordant = { module = "com.github.ajalt.mordant:mordant", version.ref = "mordant" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "android-browser" }
 
