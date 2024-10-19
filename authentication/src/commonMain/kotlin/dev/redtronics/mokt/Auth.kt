@@ -1,6 +1,6 @@
 /*
  * MIT License
- * Copyright 2024 Nils Jäkel
+ * Copyright 2024 Nils Jäkel & David Ernst
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the “Software”),
@@ -69,9 +69,7 @@ public suspend inline fun <reified T : Provider> auth(noinline builder: suspend 
     }
 
 public abstract class MojangGameAuth<out T : Provider> {
-    internal abstract val provider: T
-    public abstract fun accessToken(): AccessResponse?
-    internal abstract fun build()
+    public abstract val provider: T
 
     public suspend fun xBox(
         accessResponse: AccessResponse,

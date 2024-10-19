@@ -1,6 +1,6 @@
 /*
  * MIT License
- * Copyright 2024 Nils Jäkel
+ * Copyright 2024 Nils Jäkel & David Ernst
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the “Software”),
@@ -18,11 +18,5 @@ import dev.redtronics.mokt.provider.response.AccessResponse
 public class KeycloakBuilder internal constructor(
     override val provider: Keycloak
 ) : MojangGameAuth<Keycloak>() {
-    override fun accessToken(): AccessResponse? {
-        TODO("Not yet implemented")
-    }
 
-    override fun build() {
-        TODO("Not yet implemented")
-    }
 }

@@ -1,6 +1,6 @@
 /*
  * MIT License
- * Copyright 2024 Nils Jäkel
+ * Copyright 2024 Nils Jäkel & David Ernst
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the “Software”),
@@ -14,7 +14,7 @@ package dev.redtronics.mokt.provider.html
 import kotlinx.html.*
 
 // TODO Resolve Urls from build constants
-public fun HTML.userCodePage(userCode: String, theme: DisplayServerTheme) {
+public fun HTML.userCodePage(userCode: String, theme: WebTheme) {
     head {
         title("Device Code")
     }
@@ -63,7 +63,7 @@ public fun HTML.userCodePage(userCode: String, theme: DisplayServerTheme) {
                     justify-content: center;
                     flex-direction: column;
                     padding: 20px;
-                    background-color: ${if (theme == DisplayServerTheme.LIGHT) "#ffffff" else "#2d2d2d"};
+                    background-color: ${if (theme == WebTheme.LIGHT) "#ffffff" else "#2d2d2d"};
                 }
                 
                 .card img {
@@ -78,7 +78,7 @@ public fun HTML.userCodePage(userCode: String, theme: DisplayServerTheme) {
                     width: 100%;
                     padding: 12px;
                     text-align: center;
-                    color: ${if (theme == DisplayServerTheme.LIGHT) "#000000" else "#ffffff"}
+                    color: ${if (theme == WebTheme.LIGHT) "#000000" else "#ffffff"}
                 }
                 
                 .credits {
@@ -92,7 +92,7 @@ public fun HTML.userCodePage(userCode: String, theme: DisplayServerTheme) {
     }
 }
 
-public enum class DisplayServerTheme {
+public enum class WebTheme {
     LIGHT,
     DARK;
 }

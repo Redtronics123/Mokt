@@ -1,6 +1,6 @@
 /*
  * MIT License
- * Copyright 2024 Nils Jäkel
+ * Copyright 2024 Nils Jäkel & David Ernst
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the “Software”),
@@ -17,7 +17,7 @@ import dev.redtronics.mokt.getEnv
 import dev.redtronics.mokt.Provider
 import dev.redtronics.mokt.network.client
 import dev.redtronics.mokt.network.defaultJson
-import dev.redtronics.mokt.provider.builder.DeviceBuilder
+import dev.redtronics.mokt.provider.builder.device.DeviceBuilder
 import dev.redtronics.mokt.provider.builder.GrantFlowBuilder
 import io.ktor.client.*
 import io.ktor.http.*
@@ -114,7 +114,7 @@ public class Microsoft @PublishedApi internal constructor() : Provider {
         authMethod = MSAuthMethod.OAUTH2
 
         val oauthBuilder = GrantFlowBuilder(this)
-        return builder(oauthBuilder).apply { oauthBuilder.build() }
+        return builder(oauthBuilder).apply { oauthBuilder.validate() }
     }
 
     /**
@@ -130,7 +130,7 @@ public class Microsoft @PublishedApi internal constructor() : Provider {
         authMethod = MSAuthMethod.DEVICE_AUTH
 
         val deviceAuthBuilder = DeviceBuilder(this)
-        return builder(deviceAuthBuilder).apply { deviceAuthBuilder.build() }
+        return builder(deviceAuthBuilder).apply { deviceAuthBuilder.validate() }
     }
 }
 

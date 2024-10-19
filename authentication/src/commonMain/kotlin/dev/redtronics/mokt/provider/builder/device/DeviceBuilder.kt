@@ -1,6 +1,6 @@
 /*
  * MIT License
- * Copyright 2024 Nils Jäkel
+ * Copyright 2024 Nils Jäkel & David Ernst
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the “Software”),
@@ -11,22 +11,18 @@
 
 @file:Suppress("MemberVisibilityCanBePrivate")
 
-package dev.redtronics.mokt.provider.builder
+package dev.redtronics.mokt.provider.builder.device
 
 import dev.redtronics.mokt.MojangGameAuth
 import dev.redtronics.mokt.provider.Microsoft
 import dev.redtronics.mokt.network.interval
-import dev.redtronics.mokt.openInBrowser
-import dev.redtronics.mokt.provider.html.userCodePage
 import dev.redtronics.mokt.provider.response.*
-import dev.redtronics.mokt.provider.server.displayCodeRouting
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.util.date.*
-import kotlinx.html.HTML
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -66,25 +62,9 @@ public class DeviceBuilder internal constructor(override val provider: Microsoft
         get() = "urn:ietf:params:oauth:grant-type:device_code"
 
 
-    public var displayServerForceHttps: Boolean = false
-
-    public var displayServerUrl: Url = Url("http://localhost:18769/usercode")
-
-    public var displayServerCodePage: HTML.(userCode: String) -> Unit = { userCode -> userCodePage(userCode) }
-
-    public var display: suspend (userCode: String, url: Url) -> Unit = { userCode, url ->
-        displayUserCodeInBrowser(userCode)
-        openInBrowser(url)
-    }
-
-    public suspend fun displayUserCodeInBrowser(userCode: String) {
-        codeServer = embeddedServer(CIO, displayServerUrl.port, displayServerUrl.host) {
-            val path = displayServerUrl.fullPath.ifBlank { "/" }
-            displayCodeRouting(userCode, path, displayServerCodePage)
-        }
-
-        codeServer!!.start()
-        openInBrowser(displayServerUrl)
+    public suspend fun displayCode(userCode: String, builder: suspend DisplayCodeBuilder.() -> Unit) {
+        val displayCodeBuilder = DisplayCodeBuilder(userCode).apply { builder() }
+        codeServer = displayCodeBuilder.build()
     }
 
     /**
@@ -124,13 +104,14 @@ public class DeviceBuilder internal constructor(override val provider: Microsoft
      * @author Nils Jäkel
      * */
     public suspend fun requestAccessToken(
-        deviceCodeResponse: DeviceCodeResponse,
+//        deviceCodeResponse: DeviceCodeResponse,
         onRequestError: suspend (err: DeviceAuthStateError) -> Unit = {},
     ): AccessResponse? {
-        display(deviceCodeResponse.userCode, deviceLoginEndpointUrl)
+        display("122234", deviceLoginEndpointUrl)
 
         val startTime = getTimeMillis()
-        return authLoop(startTime, deviceCodeResponse, onRequestError)
+        return null
+//        return authLoop(startTime, deviceCodeResponse, onRequestError)
     }
 
     /**
@@ -173,13 +154,5 @@ public class DeviceBuilder internal constructor(override val provider: Microsoft
 
         codeServer!!.stop()
         return@interval provider.json.decodeFromString(AccessResponse.serializer(), responseBody)
-    }
-
-    override fun accessToken(): AccessResponse? {
-        TODO("Not yet implemented")
-    }
-
-    override fun build() {
-        if (displayServerForceHttps && !displayServerUrl.protocol.isSecure()) throw IllegalArgumentException("Display server URL is not using HTTPS")
     }
 }
