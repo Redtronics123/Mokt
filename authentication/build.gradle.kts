@@ -23,6 +23,7 @@ kotlin {
         commonMain {
             dependencies {
                 api(project(":common"))
+                api(libs.mordant)
 
                 implementation(libs.ktor.server.core)
                 implementation(libs.ktor.server.cio)

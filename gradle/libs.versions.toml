@@ -9,6 +9,7 @@ kotest = "6.0.0.M1"
 serialization = "1.7.3"
 android-browser = "1.8.0"
 datetime = "0.6.1"
+mordant = "3.0.0"
 
 [libraries]
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -41,7 +42,7 @@ kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest"
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
-
+mordant = { module = "com.github.ajalt.mordant:mordant", version.ref = "mordant" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "android-browser" }
 
 # actual plugins, but needed as dependencies in buildSrc
