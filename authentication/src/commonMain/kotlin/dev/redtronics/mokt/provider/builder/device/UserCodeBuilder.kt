@@ -22,7 +22,7 @@ import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import kotlinx.html.HTML
 
-public class DisplayCodeBuilder internal constructor(
+public class UserCodeBuilder internal constructor(
     private val userCode: String
 ) {
     private var codeServer: CIOApplicationEngine? = null
@@ -46,7 +46,7 @@ public class DisplayCodeBuilder internal constructor(
 
     public var shouldDisplayCode: Boolean = true
 
-    public var setDisplayCodeAutomatically: Boolean = false
+    public var setUserCodeAutomatically: Boolean = false
 
     public suspend fun displayUserCodeInBrowser() {
         codeServer = embeddedServer(CIO, localServerUrl.port, localServerUrl.host) {
@@ -62,9 +62,14 @@ public class DisplayCodeBuilder internal constructor(
         openInBrowser(deviceLoginEndpointUrl)
     }
 
-    public suspend fun displayUserCodeInTerminal() {
+    public fun displayUserCodeInTerminal() {
 
     }
 
     internal fun build(): CIOApplicationEngine? = codeServer
+}
+
+public enum class DisplayMode {
+    BROWSER,
+    TERMINAL
 }
