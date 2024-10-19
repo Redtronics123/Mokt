@@ -30,11 +30,24 @@ public class DisplayCodeBuilder internal constructor(
 
     public var localServerUrl: Url = Url("http://localhost:18769/usercode")
 
+    /**
+     * The URL to the Microsoft Device Login endpoint.
+     *
+     * @since 0.0.1
+     * @author Nils Jäkel
+     */
+    public val deviceLoginEndpointUrl: Url
+        get() = Url("https://www.microsoft.com/link")
+
     public var webPageTheme: WebTheme = WebTheme.DARK
 
     public var webPage: HTML.(userCode: String) -> Unit = { userCode -> userCodePage(userCode, webPageTheme) }
 
     public var forceHttps: Boolean = false
+
+    public var shouldDisplayCode: Boolean = true
+
+    public var setDisplayCodeAutomatically: Boolean = false
 
     public suspend fun displayUserCodeInBrowser() {
         codeServer = embeddedServer(CIO, localServerUrl.port, localServerUrl.host) {
@@ -43,8 +56,11 @@ public class DisplayCodeBuilder internal constructor(
         }
 
         codeServer!!.start()
-        openInBrowser(localServerUrl)
-        delay(4000)
+        if (shouldDisplayCode) {
+            openInBrowser(localServerUrl)
+        }
+
+        openInBrowser(deviceLoginEndpointUrl)
     }
 
     public suspend fun displayUserCodeInTerminal() {
