@@ -112,9 +112,7 @@ public class Microsoft @PublishedApi internal constructor() : Provider {
      * */
     public suspend fun <T> defaultGrant(builder: suspend GrantFlowBuilder.() -> T): T {
         authMethod = MSAuthMethod.OAUTH2
-
-        val oauthBuilder = GrantFlowBuilder(this)
-        return builder(oauthBuilder).apply { oauthBuilder.validate() }
+        GrantFlowBuilder(this).apply { return builder() }
     }
 
     /**
@@ -128,9 +126,7 @@ public class Microsoft @PublishedApi internal constructor() : Provider {
      * */
     public suspend fun <T> device(builder: suspend DeviceBuilder.() -> T): T {
         authMethod = MSAuthMethod.DEVICE_AUTH
-
-        val deviceAuthBuilder = DeviceBuilder(this)
-        return builder(deviceAuthBuilder).apply { deviceAuthBuilder.validate() }
+        DeviceBuilder(this).apply { return builder() }
     }
 }
 
