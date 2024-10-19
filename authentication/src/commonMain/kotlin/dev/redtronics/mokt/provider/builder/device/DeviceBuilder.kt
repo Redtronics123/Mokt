@@ -16,12 +16,15 @@ package dev.redtronics.mokt.provider.builder.device
 import dev.redtronics.mokt.MojangGameAuth
 import dev.redtronics.mokt.provider.Microsoft
 import dev.redtronics.mokt.network.interval
+import dev.redtronics.mokt.provider.html.WebTheme
+import dev.redtronics.mokt.provider.html.userCodePage
 import dev.redtronics.mokt.provider.response.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.cio.*
 import io.ktor.util.date.*
+import kotlinx.html.HTML
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -52,9 +55,35 @@ public class DeviceBuilder internal constructor(override val provider: Microsoft
         get() = "urn:ietf:params:oauth:grant-type:device_code"
 
 
-    public suspend fun displayCode(userCode: String, builder: suspend DisplayCodeBuilder.() -> Unit) {
-        val displayCodeBuilder = DisplayCodeBuilder(userCode).apply { builder() }
-        codeServer = displayCodeBuilder.build()
+    public suspend fun displayCode(userCode: String, builder: suspend UserCodeBuilder.() -> Unit) {
+        val userCodeBuilder = UserCodeBuilder(userCode).apply { builder() }
+        codeServer = userCodeBuilder.build()
+    }
+
+    public suspend fun displayCode(
+        userCode: String,
+        displayMode: DisplayMode,
+        localServerUrl: Url = Url("http://localhost:18769/usercode"),
+        webPageTheme: WebTheme = WebTheme.DARK,
+        forceHttps: Boolean = false,
+        shouldDisplayCode: Boolean = true,
+        setUserCodeAutomatically: Boolean = false,
+        webPage: HTML.(userCode: String) -> Unit = { code -> userCodePage(code, webPageTheme) }
+    ) {
+        displayCode(userCode) {
+            this.webPageTheme = webPageTheme
+            this.webPage = webPage
+            this.localServerUrl = localServerUrl
+            this.forceHttps = forceHttps
+            this.shouldDisplayCode = shouldDisplayCode
+            this.setUserCodeAutomatically = setUserCodeAutomatically
+
+            if (displayMode == DisplayMode.BROWSER) {
+                displayUserCodeInBrowser()
+            } else {
+                displayUserCodeInTerminal()
+            }
+        }
     }
 
     /**
