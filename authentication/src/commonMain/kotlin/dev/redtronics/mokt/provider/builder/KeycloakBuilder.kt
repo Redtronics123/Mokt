@@ -13,7 +13,6 @@ package dev.redtronics.mokt.provider.builder
 
 import dev.redtronics.mokt.MojangGameAuth
 import dev.redtronics.mokt.provider.Keycloak
-import dev.redtronics.mokt.provider.response.AccessResponse
 
 public class KeycloakBuilder internal constructor(
     override val provider: Keycloak

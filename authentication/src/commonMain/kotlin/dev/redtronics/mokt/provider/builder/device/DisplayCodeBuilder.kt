@@ -20,7 +20,6 @@ import dev.redtronics.mokt.provider.server.displayCodeRouting
 import io.ktor.http.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
-import kotlinx.coroutines.delay
 import kotlinx.html.HTML
 
 public class DisplayCodeBuilder internal constructor(
