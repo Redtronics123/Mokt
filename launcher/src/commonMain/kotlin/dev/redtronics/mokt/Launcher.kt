@@ -9,9 +9,10 @@
  * and/or sell copies of the Software.
  */
 
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
-}
-rootProject.name = "Mokt"
+package dev.redtronics.mokt
 
-include("common", "core", "authentication", "example", "launcher")
+public class Launcher {
+    public fun test(value: String) {
+        println(value)
+    }
+}
